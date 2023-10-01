@@ -1,0 +1,57 @@
+---
+title: "A title for your project"
+author: "Johann Wagner - u6958957"
+date: "2023-10-02"
+output:  
+    html_document:
+        toc: true
+        toc_depth: 4
+        theme: cosmo
+        number_sections: false
+        toc_float: true
+        highlight: pygments
+        fig_width: 8
+        fig_height: 4
+---
+
+# Word/figure count
+
+Words: [The number of words in your document, calculated using the word_count() function at the end of this document]
+Figures: [The number of figures in your document. You can just count these]
+
+# Location on GitHub
+
+[A URL to the root directory of your final project on GitHub]
+
+# Data Description
+
+[A brief (~100-200 words should be more than enough) description of the dataset, referencing any key publications that go with it]
+
+# Questions/Aims
+
+[A brief section which first states and then justifies the questions/aims of your EDA. Must provide evidence of independent research into what has been done before on these questions/aims. See above for examples.]
+
+# Raw data
+
+[Explains how and where to get the exact raw data you got]
+[Is reproducible by a person (required) and a machine (ideally)]
+
+# Data wrangling
+
+[R chunks and prose which:]
+[Tidies up your raw data, outputs tidied_data.csv]
+[Cleans up your tidied data, outputs cleaned_data.csv]
+
+# Sanity checks
+
+[R chunks and prose which perform sanity checks on your cleaned data]
+[Remember that this really just summarises that your data are OK after you've cleaned them]
+[Most of the real sanity checks and data cleaning go on in the data_cleaning.Rmd file]
+
+# Addressing the questions/aims
+
+[This is the *main* section of your work. For example, if you are doing an EDA, this is where you would summarise it. If you are building something like a package or shiny app, a description of that package / app and demonstration of its function(s) would go here. Use appropriate sub-headings.]
+
+# References
+
+[References you have cited throughout your text]
