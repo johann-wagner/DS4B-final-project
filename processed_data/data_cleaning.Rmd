@@ -1,7 +1,7 @@
 ---
 title: "Data Cleaning"
 author: "Johann Wagner - u6958957"
-date: "2023-10-02"
+date: "`r Sys.Date()`"
 output:  
     html_document:
         toc: true
@@ -19,6 +19,81 @@ output:
 Words: [The number of words in your document, calculated using the word_count() function at the end of this document]
 Figures: [The number of figures in your document. You can just count these]
 
-# Location on GitHub
+# Locations on GitHub
 
-[A URL to the root directory of your final project on GitHub]
+-   The RMarkdown file that produced this HTML document can be found here: [data_cleaning.Rmd](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/data_cleaning.Rmd).
+
+# Data Cleaning
+
+## **Package Loading**
+
+If you are unfamiliar with some of these packages, I've left some short code comments for you to find more information. 
+
+```{r Package-Loading, warning = FALSE, messages = FALSE}
+suppressPackageStartupMessages({
+  ### Tidyverse Collection -----------------------------------------------------
+  # The tidyverse is an opinionated collection of R packages designed for
+  # data science. All packages share an underlying design philosophy, grammar,
+  # and data structures.
+  ### https://www.tidyverse.org/
+  library(tidyverse)
+  
+  
+  
+  ### Data Exploration ---------------------------------------------------------
+  # To easily display summary statistics
+  ### https://github.com/ropensci/skimr
+  library(skimr)
+  
+  
+  
+  ### Data Cleaning/Wrangling --------------------------------------------------
+  # To easily examine and clean dirty data
+  ### https://www.rdocumentation.org/packages/janitor/versions/2.2.0
+  library(janitor)
+  
+  # To easily use date-time data
+  ### https://lubridate.tidyverse.org/
+  library(lubridate)
+  
+  # To easily handle categorical variables using factors.
+  ### https://forcats.tidyverse.org/
+  library(forcats)
+  
+  
+  
+  ### Data Visualisation -------------------------------------------------------
+  # To easily use already-made themes for data visualisation
+  ### https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/
+  library(ggthemes)
+  
+  
+  
+  ### Spatial Visualisation ----------------------------------------------------
+  # To easily manipulate spatial data
+  ### https://r-spatial.github.io/sf/
+  library(sf)
+  
+  # This may take a little while to install if you don't have absmapsdata already.
+  # Whilst I'm only using one shapefile from the package, I thought acquiring
+  # the data through a package would be more standardised/reproducible than
+  # downloading it straight from the ABS.
+  options(timeout = 1000)
+  devtools::install_github("wfmackey/absmapsdata")
+  # To easily access the Australian Bureau of Statistics (ABS) spatial structures
+  ### https://github.com/wfmackey/absmapsdata
+  library(absmapsdata)
+  
+  # To easily interact spatial data and ggplot2
+  ### https://paleolimbot.github.io/ggspatial/
+  library(ggspatial)
+  
+  
+  
+  ### Misc ---------------------------------------------------------------------
+  # To easily standardise naming conventions based upon a consistent design
+  # philosophy
+  ### https://github.com/Tazinho/snakecase
+  library(snakecase)
+})
+```

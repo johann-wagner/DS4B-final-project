@@ -11,7 +11,7 @@
 
 <meta name="author" content="Johann Wagner - u6958957" />
 
-<meta name="date" content="2023-10-02" />
+<meta name="date" content="2023-10-05" />
 
 <title>Data Cleaning</title>
 
@@ -1307,6 +1307,107 @@ ul.task-list{list-style: none;}
 
 
 
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 
@@ -1470,7 +1571,7 @@ border-radius: 0px;
 
 <h1 class="title toc-ignore">Data Cleaning</h1>
 <h4 class="author">Johann Wagner - u6958957</h4>
-<h4 class="date">2023-10-02</h4>
+<h4 class="date">2023-10-05</h4>
 
 </div>
 
@@ -1481,9 +1582,91 @@ border-radius: 0px;
 word_count() function at the end of this document] Figures: [The number
 of figures in your document. You can just count these]</p>
 </div>
-<div id="location-on-github" class="section level1">
-<h1>Location on GitHub</h1>
-<p>[A URL to the root directory of your final project on GitHub]</p>
+<div id="locations-on-github" class="section level1">
+<h1>Locations on GitHub</h1>
+<ul>
+<li>The RMarkdown file that produced this HTML document can be found
+here: <a href="https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/data_cleaning.Rmd">data_cleaning.Rmd</a>.</li>
+</ul>
+</div>
+<div id="data-cleaning" class="section level1">
+<h1>Data Cleaning</h1>
+<div id="package-loading" class="section level2">
+<h2><strong>Package Loading</strong></h2>
+<p>If you are unfamiliar with some of these packages, I’ve left some
+short code comments for you to find more information.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>({</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="do">### Tidyverse Collection -----------------------------------------------------</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  <span class="co"># The tidyverse is an opinionated collection of R packages designed for</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="co"># data science. All packages share an underlying design philosophy, grammar,</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="co"># and data structures.</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="do">### https://www.tidyverse.org/</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  </span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  </span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  </span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  <span class="do">### Data Exploration ---------------------------------------------------------</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  <span class="co"># To easily display summary statistics</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="do">### https://github.com/ropensci/skimr</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  <span class="fu">library</span>(skimr)</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>  </span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>  </span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>  </span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>  <span class="do">### Data Cleaning/Wrangling --------------------------------------------------</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>  <span class="co"># To easily examine and clean dirty data</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>  <span class="do">### https://www.rdocumentation.org/packages/janitor/versions/2.2.0</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>  <span class="fu">library</span>(janitor)</span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a>  </span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a>  <span class="co"># To easily use date-time data</span></span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a>  <span class="do">### https://lubridate.tidyverse.org/</span></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a>  <span class="fu">library</span>(lubridate)</span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a>  </span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a>  <span class="co"># To easily handle categorical variables using factors.</span></span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a>  <span class="do">### https://forcats.tidyverse.org/</span></span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a>  <span class="fu">library</span>(forcats)</span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a>  </span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a>  </span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a>  </span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a>  <span class="do">### Data Visualisation -------------------------------------------------------</span></span>
+<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a>  <span class="co"># To easily use already-made themes for data visualisation</span></span>
+<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a>  <span class="do">### https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/</span></span>
+<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a>  <span class="fu">library</span>(ggthemes)</span>
+<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a>  </span>
+<span id="cb1-38"><a href="#cb1-38" tabindex="-1"></a>  </span>
+<span id="cb1-39"><a href="#cb1-39" tabindex="-1"></a>  </span>
+<span id="cb1-40"><a href="#cb1-40" tabindex="-1"></a>  <span class="do">### Spatial Visualisation ----------------------------------------------------</span></span>
+<span id="cb1-41"><a href="#cb1-41" tabindex="-1"></a>  <span class="co"># To easily manipulate spatial data</span></span>
+<span id="cb1-42"><a href="#cb1-42" tabindex="-1"></a>  <span class="do">### https://r-spatial.github.io/sf/</span></span>
+<span id="cb1-43"><a href="#cb1-43" tabindex="-1"></a>  <span class="fu">library</span>(sf)</span>
+<span id="cb1-44"><a href="#cb1-44" tabindex="-1"></a>  </span>
+<span id="cb1-45"><a href="#cb1-45" tabindex="-1"></a>  <span class="co"># This may take a little while to install if you don&#39;t have absmapsdata already.</span></span>
+<span id="cb1-46"><a href="#cb1-46" tabindex="-1"></a>  <span class="co"># Whilst I&#39;m only using one shapefile from the package, I thought acquiring</span></span>
+<span id="cb1-47"><a href="#cb1-47" tabindex="-1"></a>  <span class="co"># the data through a package would be more standardised/reproducible than</span></span>
+<span id="cb1-48"><a href="#cb1-48" tabindex="-1"></a>  <span class="co"># downloading it straight from the ABS.</span></span>
+<span id="cb1-49"><a href="#cb1-49" tabindex="-1"></a>  <span class="fu">options</span>(<span class="at">timeout =</span> <span class="dv">1000</span>)</span>
+<span id="cb1-50"><a href="#cb1-50" tabindex="-1"></a>  devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;wfmackey/absmapsdata&quot;</span>)</span>
+<span id="cb1-51"><a href="#cb1-51" tabindex="-1"></a>  <span class="co"># To easily access the Australian Bureau of Statistics (ABS) spatial structures</span></span>
+<span id="cb1-52"><a href="#cb1-52" tabindex="-1"></a>  <span class="do">### https://github.com/wfmackey/absmapsdata</span></span>
+<span id="cb1-53"><a href="#cb1-53" tabindex="-1"></a>  <span class="fu">library</span>(absmapsdata)</span>
+<span id="cb1-54"><a href="#cb1-54" tabindex="-1"></a>  </span>
+<span id="cb1-55"><a href="#cb1-55" tabindex="-1"></a>  <span class="co"># To easily interact spatial data and ggplot2</span></span>
+<span id="cb1-56"><a href="#cb1-56" tabindex="-1"></a>  <span class="do">### https://paleolimbot.github.io/ggspatial/</span></span>
+<span id="cb1-57"><a href="#cb1-57" tabindex="-1"></a>  <span class="fu">library</span>(ggspatial)</span>
+<span id="cb1-58"><a href="#cb1-58" tabindex="-1"></a>  </span>
+<span id="cb1-59"><a href="#cb1-59" tabindex="-1"></a>  </span>
+<span id="cb1-60"><a href="#cb1-60" tabindex="-1"></a>  </span>
+<span id="cb1-61"><a href="#cb1-61" tabindex="-1"></a>  <span class="do">### Misc ---------------------------------------------------------------------</span></span>
+<span id="cb1-62"><a href="#cb1-62" tabindex="-1"></a>  <span class="co"># To easily standardise naming conventions based upon a consistent design</span></span>
+<span id="cb1-63"><a href="#cb1-63" tabindex="-1"></a>  <span class="co"># philosophy</span></span>
+<span id="cb1-64"><a href="#cb1-64" tabindex="-1"></a>  <span class="do">### https://github.com/Tazinho/snakecase</span></span>
+<span id="cb1-65"><a href="#cb1-65" tabindex="-1"></a>  <span class="fu">library</span>(snakecase)</span>
+<span id="cb1-66"><a href="#cb1-66" tabindex="-1"></a>})</span></code></pre></div>
+<pre><code>## WARNING: Rtools is required to build R packages, but is not currently installed.
+## 
+## Please download and install Rtools 4.2 from https://cran.r-project.org/bin/windows/Rtools/.</code></pre>
+<pre><code>## Skipping install of &#39;absmapsdata&#39; from a github remote, the SHA1 (513415b9) has not changed since last install.
+##   Use `force = TRUE` to force installation</code></pre>
+</div>
 </div>
 
 
