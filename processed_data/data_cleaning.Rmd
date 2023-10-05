@@ -5,13 +5,17 @@ date: "`r Sys.Date()`"
 output:  
     html_document:
         toc: true
-        toc_depth: 4
+        toc_depth: 6
         theme: cosmo
         number_sections: false
         toc_float: true
         highlight: pygments
-        fig_width: 8
-        fig_height: 4
+        fig_width: 10
+        fig_height: 6
+        df_print: paged
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 # Word/figure count
@@ -24,6 +28,8 @@ Figures: [The number of figures in your document. You can just count these]
 -   The RMarkdown file that produced this HTML document can be found here: [data_cleaning.Rmd](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/data_cleaning.Rmd).
 
 # Data Cleaning
+
+The purpose of this .Rmd file is to search and take note/keep a log of any dodgy data points.
 
 ## **Package Loading**
 
@@ -67,6 +73,10 @@ suppressPackageStartupMessages({
   ### https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/
   library(ggthemes)
   
+  # To combine a scatter plot and a 2D density plot
+  ### https://github.com/LKremer/ggpointdensity
+  library(ggpointdensity)
+  
   
   
   ### Spatial Visualisation ----------------------------------------------------
@@ -95,5 +105,195 @@ suppressPackageStartupMessages({
   # philosophy
   ### https://github.com/Tazinho/snakecase
   library(snakecase)
+  
+  # To locate and download species observations from the Atlas of Living
+  # Australia
+  ### https://galah.ala.org.au/
+  library(galah)
+  
+  # To easily enable file referencing in project-oriented workflows
+  ### https://here.r-lib.org/
+  library(here)
 })
 ```
+
+## **Data Loading and Sanity Checks**
+
+Packages are all loaded in! Let's read in a specific invasive animal species for a particular state and do some sanity checks. Ideally, we will functionalise this code to do this sanity checks on all the invasive animal species that we end up choosing for each state. Arguably, this data cleaning could be a package/RShiny dashboard in of itself!
+
+The following code is mainly reused and inspired by the [ALA Labs - An exploration of dingo observations in the ALA](https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html).
+
+First, let's log into the Atlas of Australia using the `galah_config()` function.
+
+```{r}
+# Ref [1]
+# Use an Atlas of Australia-registered email (Register at ala.org.au)
+galah_config(email = "johann.wagner@gmail.com")
+
+# References:
+# - [1] https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
+```
+
+### Rabbits in the ACT
+Let's focus on exploring rabbits in the ACT. We will scale to other species and other states/territories later.
+
+```{r}
+# Ref [1, 4]
+# To download data from the ALA
+rabbits <- galah_call() %>%
+  
+  # To conduct a search for the scientific name of the European Rabbit
+  galah_identify("oryctolagus cuniculus") %>% # Ref [2]
+  
+  # Filter records observed in the ACT
+  galah_filter(cl22 == "Australian Capital Territory") %>% 
+  
+  # Pre-applied filter to ensure quality-assured data
+  # the "ALA" profile is designed to exclude lower quality records Ref [3]
+  galah_apply_profile(ALA) %>% 
+  atlas_occurrences()
+
+rabbits
+
+
+
+# References:
+# - [1] https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
+# - [2] https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/692effa3-b719-495f-a86f-ce89e2981652
+# - [3] https://galah.ala.org.au/R/reference/galah_apply_profile.html
+# - [4] https://galah.ala.org.au/R/reference/galah.html
+```
+
+Let's use the `skim()` function to explore this dataset.
+
+```{r}
+skim(rabbits)
+```
+
+Interestingly, it seems that there are two unique `scientificName`, this is unexpected. Similarly, there are also two unique values for `taxonConceptID`. There are 1861 occurrences of rabbits in the ACT from 9 different data providers (`dataResourceName`). The most recent observation is `r rabbits$eventDate %>% max()` and the earliest is `r rabbits$eventDate %>% min()`. All the observations have longitude and latitude values, we will plot these visually in a moment to ensure they are all in the ACT.
+
+It will be good to create a function that checks that each observation is within the spatial boundaries of each respective state/territory. 
+
+#### Potential dodgy rabbit data
+Let's explore what the two unique `scientificName` values are.
+
+```{r}
+rabbits %>% 
+  group_by(scientificName) %>% 
+  count()
+```
+
+Oh wow! This is our first data cleaning pick up! Even with the pre-applied ALA filter we have found an error in one of the values in `scientificName`. 
+Let's find that specific data point.
+
+```{r}
+rabbits %>% 
+  filter(scientificName == "Oryctolagus cuniculus cuniculus")
+```
+
+Looking at the `taxonConceptID` values/websites. The "Oryctolagus cuniculus cuniculus" is actually a subspecies, not a typo! Now, that we know it is a subspecies and not a typo, let's note this value down in our `suspicious_data` dataset and reassess later, but keep it in our `rabbits` dataset.
+
+```{r}
+# Let's reuse the same columns/column names as in rabbits
+suspicious_data <- rabbits %>% 
+  filter(recordID == FALSE) %>% 
+  
+  # Add the suspicious data
+  add_row({
+    rabbits %>% 
+      filter(scientificName == "Oryctolagus cuniculus cuniculus")
+  })
+
+suspicious_data
+```
+This suspicious data point is from the [*iNaturalist Australia*](https://inaturalist.ala.org.au/) data provider, which is a Citizen Science project, so potentially more cautious investigation should go into these observations. Let's continue onto the spatial visualisation.
+
+#### Spatial visualisation of rabbits in the ACT
+
+Let's visualise the rabbits data spatially by creating a map with data points of the observations.
+
+```{r}
+# Ref [1]: Create spatial visualisation of the ACT
+state2021 %>% 
+  filter(state_name_2021 == "Australian Capital Territory") %>% 
+  ggplot() +
+  
+  # Ref [1]: Create background polygon of the ACT
+  geom_sf(
+    aes(geometry = geometry)
+  ) +
+  
+  geom_point(
+    data = rabbits,
+    aes(
+      x = decimalLongitude,
+      y = decimalLatitude
+    ),
+    alpha = 0.6
+  ) +
+  
+  coord_sf() +
+  
+  theme_minimal()
+
+
+
+# References:
+# - [1] https://github.com/wfmackey/absmapsdata/tree/master
+```
+
+Interestingly, it seems like there are a select number of observations outside of the ACT borders, which I assume is Jervis Bay territory. Let's spatially isolate these data points and see if they really are in the Jervis Bay territory.
+
+```{r}
+# Ref [1]: Create spatial visualisation of the ACT
+state2021 %>% 
+  filter(state_name_2021 == "Australian Capital Territory") %>% 
+  ggplot() +
+  
+  # Ref [1]: Create background polygon of the ACT
+  geom_sf(
+    aes(geometry = geometry)
+  ) +
+  
+  # Plot the Jervis Bay polygon
+  geom_sf(
+    data = {
+      suburb2021 %>%
+        filter(suburb_name_2021 == "Jervis Bay")
+      },
+    aes(geometry = geometry)
+  ) +
+  
+  geom_point(
+    data = rabbits,
+    aes(
+      x = decimalLongitude,
+      y = decimalLatitude
+    ),
+    alpha = 0.6
+  ) +
+  
+  coord_sf() +
+  
+  theme_minimal()
+
+
+
+# References:
+# - [1] https://github.com/wfmackey/absmapsdata/tree/master
+```
+
+Hypothesis has been confirmed! The data points are from the Jervis Bay territory. For the sake/scope of this assignment, we will put these data points into the ` excluded_data` dataset and remove these from our main dataset. Because I really only want to showcase observations in the main state/territory borders, as this RShiny Dashboard tool should be used for macro-scale, not small territories.
+
+## **Data Wrangling**
+
+Create month column
+
+# References
+
+-   An exploration of dingo observations in the ALA https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html (Accessed: 2023-10-05)
+-   https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/692effa3-b719-495f-a86f-ce89e2981652 (Accessed: 2023-10-05)
+-   https://galah.ala.org.au/R/reference/galah_apply_profile.html (Accessed: 2023-10-05)
+-   https://galah.ala.org.au/R/reference/galah.html (Accessed: 2023-10-05)
+-   https://github.com/wfmackey/absmapsdata/tree/master (Accessed: 2023-10-05)
+-   https://inaturalist.ala.org.au/
