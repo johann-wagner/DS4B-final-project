@@ -191,20 +191,29 @@ rabbits %>%
   filter(scientificName == "Oryctolagus cuniculus cuniculus")
 ```
 
+#### Create suspicious data
 Looking at the `taxonConceptID` values/websites. The "Oryctolagus cuniculus cuniculus" is actually a subspecies, not a typo! Now, that we know it is a subspecies and not a typo, let's note this value down in our `suspicious_data` dataset and reassess later, but keep it in our `rabbits` dataset.
 
 ```{r}
 # Let's reuse the same columns/column names as in rabbits
-suspicious_data <- rabbits %>% 
+rabbits_suspicious <- rabbits %>% 
   filter(recordID == FALSE) %>% 
+  mutate(
+    suspicious_notes = character(),
+    date             = character()
+    ) %>% 
   
   # Add the suspicious data
   add_row({
     rabbits %>% 
-      filter(scientificName == "Oryctolagus cuniculus cuniculus")
+      filter(scientificName == "Oryctolagus cuniculus cuniculus") %>% 
+      mutate(
+        suspicious_notes = "This is a subspecies of the Oryctolagus cuniculus species and is the only one in the ACT.",
+        date = "2023-10-05"
+        )
   })
 
-suspicious_data
+rabbits_suspicious
 ```
 This suspicious data point is from the [*iNaturalist Australia*](https://inaturalist.ala.org.au/) data provider, which is a Citizen Science project, so potentially more cautious investigation should go into these observations. Let's continue onto the spatial visualisation.
 
@@ -283,7 +292,177 @@ state2021 %>%
 # - [1] https://github.com/wfmackey/absmapsdata/tree/master
 ```
 
-Hypothesis has been confirmed! The data points are from the Jervis Bay territory. For the sake/scope of this assignment, we will put these data points into the ` excluded_data` dataset and remove these from our main dataset. Because I really only want to showcase observations in the main state/territory borders, as this RShiny Dashboard tool should be used for macro-scale, not small territories.
+Hypothesis has been confirmed! The data points are from the Jervis Bay territory. 
+
+#### Exclusion of Jervis Bay territory data
+For the sake/scope of this assignment, we will put these data points into the ` excluded_data` dataset and remove these from our main dataset. Because I really only want to showcase observations in the main state/territory borders, as this RShiny Dashboard tool should be used for macro-scale, not small territories.
+
+Let's create an `sf` data type so that we can use the `st_filter()` function, which filters the spatial data points within a given spatial polygon. In our case, we only want to include the data points that are within the ACT border boundary polygon.
+
+```{r}
+rabbits_sf_clean <- rabbits %>% 
+  
+  # Ref [1]: Convert rabbits tibble into an sf data type
+  st_as_sf(
+    coords = c("decimalLongitude", "decimalLatitude"),
+    crs = "+proj=longlat +datum=WGS84"
+  ) %>% 
+  
+  # Ref [2]: Filter the data points that are within the ACT
+    st_filter({
+      state2021 %>% 
+    filter(state_name_2021 == "Australian Capital Territory")}
+    )
+
+rabbits_sf_clean
+
+
+# References:
+# - [1] https://stackoverflow.com/a/52951856/22410914
+# - [2] https://rdrr.io/cran/sf/man/st_as_sf.html
+```
+We've now filtered out the excluded data points; however, we want to keep using the `tibble` data type, so let's do some joins.
+
+```{r}
+rabbits_clean <- rabbits %>% 
+  
+  # Find all the clean observations
+  right_join(
+    rabbits_sf_clean,
+    join_by(
+      eventDate,
+      scientificName,
+      taxonConceptID,
+      recordID,
+      dataResourceName,
+      occurrenceStatus
+      )
+    )
+
+rabbits_clean
+```
+
+This is now the clean rabbits dataset for the ACT.
+
+Let's look at the excluded datasets.
+
+```{r}
+rabbits_excluded <- rabbits %>% 
+  
+  # Find all the excluded observations
+  anti_join(
+    rabbits_sf_clean,
+    join_by(
+      eventDate,
+      scientificName,
+      taxonConceptID,
+      recordID,
+      dataResourceName,
+      occurrenceStatus
+      )
+    )
+
+rabbits_excluded
+```
+
+Let's plot these points just for sanity checks.
+
+```{r}
+# Ref [1]: Create spatial visualisation of the ACT
+state2021 %>% 
+  filter(state_name_2021 == "Australian Capital Territory") %>% 
+  ggplot() +
+  
+  # Ref [1]: Create background polygon of the ACT
+  geom_sf(
+    aes(geometry = geometry)
+  ) +
+  
+  # Plot the Jervis Bay polygon
+  geom_sf(
+    data = {
+      suburb2021 %>%
+        filter(suburb_name_2021 == "Jervis Bay")
+      },
+    aes(geometry = geometry)
+  ) +
+  
+  geom_point(
+    data = rabbits_excluded,
+    aes(
+      x = decimalLongitude,
+      y = decimalLatitude
+    ),
+    alpha = 0.6
+  ) +
+  
+  coord_sf() +
+  
+  theme_minimal() +
+  
+  labs(title = "Excluded Data Points")
+
+
+
+# References:
+# - [1] https://github.com/wfmackey/absmapsdata/tree/master
+```
+
+It seems like we have picked up a few extra points that seem to be just outside the ACT border boundaries. Because of the scope of the assignment, we will keep excluding all of these points. It is likely that this is either a misalignment with the ACT boundary from the ABS and the mapping data input software used by the data providers. It could also be that the borders have slightly changed in the past as the ABS boundary is the one used in 2021. There could also be an error in the GPS location data that is causing these points to be outside the ACT boundary. Regardless of the reason, due to the scope of this assignment, these points will be excluded.
+
+#### Create excluded data
+
+```{r}
+# Let's reuse the same columns/column names as in rabbits
+rabbits_excluded <- rabbits_excluded %>% 
+  
+  # Add excluded_notes
+  mutate(
+    date = "2023-10-05",
+    
+    excluded_notes = "These data points are outside the ABS ACT boundary. They include points that are just outside the boundary within a few kilometers and points that are in Jervis Bay"
+    )
+
+rabbits_excluded
+```
+
+#### Final Spatial Visualisation
+
+Let's make a final spatial visualisation.
+
+```{r}
+# Ref [1]: Create spatial visualisation of the ACT
+state2021 %>% 
+  filter(state_name_2021 == "Australian Capital Territory") %>% 
+  ggplot() +
+  
+  # Ref [1]: Create background polygon of the ACT
+  geom_sf(
+    aes(geometry = geometry)
+  ) +
+  
+  geom_point(
+    data = rabbits_clean,
+    aes(
+      x = decimalLongitude,
+      y = decimalLatitude
+    ),
+    alpha = 0.6
+  ) +
+  
+  coord_sf() +
+  
+  theme_minimal() +
+  
+  # Ref [2]
+  labs(title = "Rabbit observations in the ACT")
+
+
+
+# References:
+# - [1] https://github.com/wfmackey/absmapsdata/tree/master
+# - [2] https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
+```
 
 ## **Data Wrangling**
 
@@ -297,3 +476,5 @@ Create month column
 -   https://galah.ala.org.au/R/reference/galah.html (Accessed: 2023-10-05)
 -   https://github.com/wfmackey/absmapsdata/tree/master (Accessed: 2023-10-05)
 -   https://inaturalist.ala.org.au/
+-   https://stackoverflow.com/a/52951856/22410914
+-   https://rdrr.io/cran/sf/man/st_as_sf.html
