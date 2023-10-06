@@ -687,24 +687,23 @@ rabbits_all_states_clean %>%
 It seems like there are several points that are not in any of the state/territory polygons. Let's investigate these as we will likely just exclude these points.
 
 ```{r}
-rabbits_all_states_clean <- rabbits_all_states_clean %>% 
-  mutate(
-    state = case_when(
-      is.na(state) ~ "Not within any state/territory",
-      .default = state
-    )
-  )
-
 state2021 %>% 
   ggplot() +
   
-  # Ref [1]: Create background polygon of the ACT
   geom_sf(
     aes(geometry = geometry)
   ) +
   
   geom_point(
-    data = rabbits_all_states_clean,
+    data = {
+      rabbits_all_states_clean %>% 
+        mutate(
+          state = case_when(
+            is.na(state) ~ "Not within any state/territory",
+            .default = state
+          )
+        )
+      },
     aes(
       x = decimalLongitude,
       y = decimalLatitude,
@@ -719,32 +718,28 @@ state2021 %>%
   
   theme_minimal() +
   
-  # Ref [2]
   labs(title = "Rabbit observations in Australia")
 ```
 
 Ah hah! Interestingly, the dataset that I am using must not be filtered for just observations in Australia. Good thing we did this sanity check! Let's just show the not within any state/territory points, just to make sure.
 
 ```{r}
-rabbits_all_states_clean <- rabbits_all_states_clean %>% 
-  mutate(
-    state = case_when(
-      is.na(state) ~ "Not within any state/territory",
-      .default = state
-    )
-  )
-
 state2021 %>% 
   ggplot() +
   
-  # Ref [1]: Create background polygon of the ACT
   geom_sf(
     aes(geometry = geometry)
   ) +
   
   geom_point(
     data = {
-      rabbits_all_states_clean %>%
+      rabbits_all_states_clean %>% 
+        mutate(
+          state = case_when(
+            is.na(state) ~ "Not within any state/territory",
+            .default = state
+          )
+        ) %>% 
         filter(state == "Not within any state/territory")
       },
     aes(
@@ -761,33 +756,29 @@ state2021 %>%
   
   theme_minimal() +
   
-  # Ref [2]
   labs(title = "Rabbit observations in Australia",
        subtitle = "Only observations that didn't fall within any state/territory")
 ```
-
-Interestingly, it seems that there are quite a few observations that must be along the coastline / in the water. Let's just look at just NSW.
+### Ocean Rabbits? Let's exclude them!
+Interestingly, it seems that there are quite a few observations that must be along the coastline / in the water. Let's just look at just the southern coastline of Victoria.
 
 ```{r}
-rabbits_all_states_clean <- rabbits_all_states_clean %>% 
-  mutate(
-    state = case_when(
-      is.na(state) ~ "Not within any state/territory",
-      .default = state
-    )
-  )
-
 state2021 %>% 
   ggplot() +
   
-  # Ref [1]: Create background polygon of the ACT
   geom_sf(
     aes(geometry = geometry)
   ) +
   
   geom_point(
     data = {
-      rabbits_all_states_clean %>%
+      rabbits_all_states_clean %>% 
+        mutate(
+          state = case_when(
+            is.na(state) ~ "Not within any state/territory",
+            .default = state
+          )
+        ) %>% 
         filter(state == "Not within any state/territory")
       },
     aes(
@@ -801,15 +792,147 @@ state2021 %>%
   scale_colour_viridis_d() +
   
   coord_sf(
-    xlim = c()
-    ylim = c()
+    xlim = c(142.0, 150.0),
+    ylim = c(-40, -35)
   ) +
   
   theme_minimal() +
   
-  # Ref [2]
-  labs(title = "Rabbit observations in Australia")
+  labs(title = "Rabbit observations in southern Victoria",
+       subtitle = "Points that are not within any state/territory")
 ```
+
+I have never heard of any ocean rabbits, so let's just take a blanket assumption and exclude these results. There are probably some uncertainty in the GPS measurements or data entry errors or potentially islands that don't come up on the ABS maps or even a misalignment between the ABS data and the ALA spatial data. Regardless, of the reason, let's put all of these measurements into the `excluded_data` dataset.
+
+### add_not_within_abs_map_to_excluded_data
+
+Let's create a function that adds these "ocean rabbits" to the `excluded_data` dataset.
+
+```{r}
+remove_not_within_abs_map_values <- function(species_all_states_clean) {
+  species_all_states_clean <- species_all_states_clean %>% 
+    filter(
+      !is.na(state)
+    )
+  
+  return(species_all_states_clean)
+}
+
+add_not_within_abs_map_to_excluded_data <- function(species_all_states_clean) {
+  # Let's reuse the same columns/column names as in rabbits
+  add_excluded <- species_all_states_clean %>% 
+    
+    filter(is.na(state)) %>% 
+    
+    # Add excluded_notes
+    mutate(
+      date = Sys.Date(),
+      
+      excluded_notes = "These data points are not within any of the 8 states and territories ABS borders. They are either overseas data points or are just off the coastline of Australia."
+      )
+  
+  excluded_data <- bind_rows(excluded_data, add_excluded)
+  return(excluded_data)
+}
+```
+
+
+```{r}
+excluded_data <- rabbits_all_states_clean %>% 
+  add_not_within_abs_map_to_excluded_data()
+```
+
+Now our final set of functions are as follows:
+```{r}
+rabbits_all_states_clean <- rabbits_all_states %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  remove_not_within_abs_map_values()
+
+skim(rabbits_all_states_clean)
+```
+Nice, all columns are complete (don't have missing values). There are 109,891 unique `recordID` values and the same amount of observations, so we haven't accidentally duplicated any values. Interestingly, there are 84,558 unique `geometry` values, so there must be several thousand observations that have overlapping locations. There are 8 `state` values, which makes sense.
+
+Plenty of sense checks, I'm happy with the data cleaning of rabbits in Australia!
+
+Let's check our excluded data.
+```{r}
+excluded_data %>% 
+  group_by(excluded_notes) %>% 
+  count()
+```
+
+## **Scaling to other species!**
+
+### Apply all the functions to the European Red Fox
+Now that we've cleaned the data for rabbits for all of Australia, let's take our functions and apply them to a different species! Let's try foxes (vulpes vulpes).
+
+```{r}
+# Raw Data
+raw_foxes <- load_galah_occurrence_data(
+  species_name = "vulpes vulpes"
+  )
+
+# Processed Data
+clean_foxes <- raw_foxes %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  remove_not_within_abs_map_values()
+
+# Excluded Data
+excluded_data <- raw_foxes %>% 
+  add_na_eventdate_to_excluded_data()
+
+excluded_data <- raw_foxes %>% 
+  add_na_spatial_to_excluded_data()
+
+excluded_data <- raw_foxes %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  add_not_within_abs_map_to_excluded_data()
+```
+
+### Sanity checks on the foxes data
+Let's look at the raw data
+```{r}
+skim(raw_foxes)
+```
+
+Sweet! There are 127,963 fox observations in this dataset. There are 152 missing spatial data. There are also 664 missing dates. So this is what we should expect as counts in the `excluded_data` dataset. Let's check!
+
+```{r}
+excluded_data %>% 
+  group_by(scientificName, excluded_notes) %>% 
+  count()
+```
+
+Amazing! Our functions works!!! Let's look at our cleaned data.
+
+```{r}
+clean_foxes %>% skim()
+```
+
+Everything looks good using `skim()` function.
+
+## **Scaling to a lot more species!**
+Time to now apply these functions to a few more species. Let's find a bunch more invasive animal species in Australia and put their scientific names into a vector. Then we can use this vector to run our functions and output the data as a list of different tibbles.
+
+```{r}
+species_names <- c(
+  "oryctolagus cuniculus", # European Rabbit
+  "vulpes vulpes", # European Red Fox
+  "rhinella marina", # Cane Toad
+  "capra hircus",
+  "equus caballus" # Feral Horse
+)
+
+raw_cane_toad <- load_galah_occurrence_data(
+  species_name = "rhinella marina"
+  )
+
+skim(raw_cane_toad)
+```
+
 
 # References
 
