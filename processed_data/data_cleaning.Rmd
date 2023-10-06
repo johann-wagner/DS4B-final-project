@@ -915,24 +915,247 @@ clean_foxes %>% skim()
 Everything looks good using `skim()` function.
 
 ## **Scaling to a lot more species!**
-Time to now apply these functions to a few more species. Let's find a bunch more invasive animal species in Australia and put their scientific names into a vector. Then we can use this vector to run our functions and output the data as a list of different tibbles.
+Time to now apply these functions to a few more species. Let's find a bunch more [invasive animal species in Australia](https://en.wikipedia.org/wiki/Invasive_species_in_Australia) and put their scientific names into a vector. Then we can use this vector to run our functions and output the data as a list of different tibbles.
 
+Let's also create a new column indicating which species is which because there are some species that have multiple different scientific names.
+
+These are the species I want to focus on:
+
+-   European Rabbit (Oryctolagus cuniculus)
+-   European Red Fox (Vulpes vulpes)
+-   Cane Toad (Rhinella marina)
+-   Feral Cat (Felis catus)
+-   Feral Horse (Equus caballus)
+-   Feral Pig (Sus scrofa)
+-   Red Imported Fire Ant (Solenopsis invicta)
+
+### European Rabbit
 ```{r}
-species_names <- c(
-  "oryctolagus cuniculus", # European Rabbit
-  "vulpes vulpes", # European Red Fox
-  "rhinella marina", # Cane Toad
-  "capra hircus",
-  "equus caballus" # Feral Horse
-)
+# Raw Data
+raw_rabbits <- load_galah_occurrence_data(
+  species_name = "Oryctolagus cuniculus"
+  )
 
-raw_cane_toad <- load_galah_occurrence_data(
+# Processed Data
+clean_rabbits <- raw_rabbits %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  remove_not_within_abs_map_values() %>% 
+  mutate(
+    simpleName = "European Rabbit"
+  )
+
+# Excluded Data
+excluded_data <- raw_rabbits %>% 
+  add_na_eventdate_to_excluded_data()
+
+excluded_data <- raw_rabbits %>% 
+  add_na_spatial_to_excluded_data()
+
+excluded_data <- raw_rabbits %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  add_not_within_abs_map_to_excluded_data()
+```
+
+### European Red Fox
+```{r}
+# Raw Data
+raw_foxes <- load_galah_occurrence_data(
+  species_name = "vulpes vulpes"
+  )
+
+# Processed Data
+clean_foxes <- raw_foxes %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  remove_not_within_abs_map_values() %>% 
+  mutate(
+    simpleName = "European Red Fox"
+  )
+
+# Excluded Data
+excluded_data <- raw_foxes %>% 
+  add_na_eventdate_to_excluded_data()
+
+excluded_data <- raw_foxes %>% 
+  add_na_spatial_to_excluded_data()
+
+excluded_data <- raw_foxes %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  add_not_within_abs_map_to_excluded_data()
+```
+
+### Cane Toad
+```{r}
+# Raw Data
+raw_cane_toads <- load_galah_occurrence_data(
   species_name = "rhinella marina"
   )
 
-skim(raw_cane_toad)
+# Processed Data
+clean_cane_toads <- raw_cane_toads %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  remove_not_within_abs_map_values() %>% 
+  mutate(
+    simpleName = "Cane Toad"
+  )
+
+# Excluded Data
+excluded_data <- raw_cane_toads %>% 
+  add_na_eventdate_to_excluded_data()
+
+excluded_data <- raw_cane_toads %>% 
+  add_na_spatial_to_excluded_data()
+
+excluded_data <- raw_cane_toads %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  add_not_within_abs_map_to_excluded_data()
 ```
 
+### Feral Cat
+```{r}
+# Raw Data
+raw_cats <- load_galah_occurrence_data(
+  species_name = "felis catus"
+  )
+
+# Processed Data
+clean_cats <- raw_cats %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  remove_not_within_abs_map_values() %>% 
+  mutate(
+    simpleName = "Feral Cat"
+  )
+
+# Excluded Data
+excluded_data <- raw_cats %>% 
+  add_na_eventdate_to_excluded_data()
+
+excluded_data <- raw_cats %>% 
+  add_na_spatial_to_excluded_data()
+
+excluded_data <- raw_cats %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  add_not_within_abs_map_to_excluded_data()
+```
+
+### Feral Horse
+```{r}
+# Raw Data
+raw_horses <- load_galah_occurrence_data(
+  species_name = "equus caballus"
+  )
+
+# Processed Data
+clean_horses <- raw_horses %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  remove_not_within_abs_map_values() %>% 
+  mutate(
+    simpleName = "Feral Horse"
+  )
+
+# Excluded Data
+excluded_data <- raw_horses %>% 
+  add_na_eventdate_to_excluded_data()
+
+excluded_data <- raw_horses %>% 
+  add_na_spatial_to_excluded_data()
+
+excluded_data <- raw_horses %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  add_not_within_abs_map_to_excluded_data()
+```
+
+### Feral Pig
+```{r}
+# Raw Data
+raw_pigs <- load_galah_occurrence_data(
+  species_name = "sus scrofa"
+  )
+
+# Processed Data
+clean_pigs <- raw_pigs %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  remove_not_within_abs_map_values() %>% 
+  mutate(
+    simpleName = "Feral Pig"
+  )
+
+# Excluded Data
+excluded_data <- raw_pigs %>% 
+  add_na_eventdate_to_excluded_data()
+
+excluded_data <- raw_pigs %>% 
+  add_na_spatial_to_excluded_data()
+
+excluded_data <- raw_pigs %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  add_not_within_abs_map_to_excluded_data()
+```
+
+### Red Imported Fire Ant
+```{r}
+# Raw Data
+raw_red_fire_ants <- load_galah_occurrence_data(
+  species_name = "solenopsis invicta"
+  )
+
+# Processed Data
+clean_red_fire_ants <- raw_red_fire_ants %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  remove_not_within_abs_map_values() %>% 
+  mutate(
+    simpleName = "Red Imported Fire Ant"
+  )
+
+# Excluded Data
+excluded_data <- raw_red_fire_ants %>% 
+  add_na_eventdate_to_excluded_data()
+
+excluded_data <- raw_red_fire_ants %>% 
+  add_na_spatial_to_excluded_data()
+
+excluded_data <- raw_red_fire_ants %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  add_not_within_abs_map_to_excluded_data()
+```
+
+##**Bulk-Sanity Checks on the clean data**
+
+Let's put all of the cleaned datasets into one big tibble
+```{r}
+clean_invasive_species_data <- clean_rabbits %>% 
+  bind_rows(
+    clean_foxes,
+    clean_cane_toads,
+    clean_cats,
+    clean_horses,
+    clean_pigs,
+    clean_red_fire_ants
+  )
+
+clean_invasive_species_data
+```
+
+Great! Looking good! Let's do a quick `skim()`.
+
+```{r}
+skim(clean_invasive_species_data)
+```
+
+Excellent! There are 327,522 rows and the same amount of unique `recordID` values. There are 8 `state` values, which makes sense! There are 7 `simpleName` values, which makes sense as we only pulled 7 different invasive species.
 
 # References
 
