@@ -464,9 +464,352 @@ state2021 %>%
 # - [2] https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
 ```
 
-## **Data Wrangling**
+## **Scaling from a single state to all of Australia**
 
-Create month column
+Ideally, we want to create functions that do all of this cleaning for us.
+
+### load_galah_occurrence_data function
+Let's start with a function that extracts the raw data for a particular species for all of Australia. We will sort the state/territory later.
+
+```{r}
+load_galah_occurrence_data <- function(
+  # character string of scientific name of species
+  species_name
+  ) {
+  species_occurrence <- galah_call() %>%
+  
+  # To conduct a search for species scientific name
+  galah_identify(species_name) %>% # Ref [2]
+  
+  # Pre-applied filter to ensure quality-assured data
+  # the "ALA" profile is designed to exclude lower quality records Ref [3]
+  galah_apply_profile(ALA) %>% 
+  atlas_occurrences()
+  
+  return(species_occurrence)
+}
+```
+
+### Rabbits in all of Australia
+Let's test the `load_galah_occurrence_data` function.
+
+```{r}
+rabbits_all_states <- load_galah_occurrence_data(
+  species_name = "oryctolagus cuniculus"
+  )
+rabbits_all_states
+```
+
+```{r}
+skim(rabbits_all_states)
+```
+
+It seems like there are some missing values for `decimalLatitude` and `decimalLongitude`, as well as for `eventDate`. Let's explore these values.
+
+```{r}
+rabbits_all_states %>% 
+  filter(is.na(decimalLatitude)) %>% 
+  group_by(dataResourceName) %>% 
+  count() %>% 
+  arrange(desc(n))
+```
+
+```{r}
+rabbits_all_states %>% 
+  filter(is.na(eventDate)) %>% 
+  group_by(dataResourceName) %>% 
+  count() %>% 
+  arrange(desc(n))
+```
+
+It seems that most of these missing values are from museum providers for OZCAM. It also seems that the Tasmanian Values Atlas have not provided any spatial information. Let's put all of these data points into the `excluded_data` dataset.
+
+### remove_na_values and add_na_values_to_excluded_data functions
+Let's create a function that will do this automatically.
+
+```{r}
+remove_na_values <- function(species_occurrence) {
+  species_occurrence_clean <- species_occurrence %>% 
+    filter(
+      !is.na(eventDate),
+      !is.na(decimalLatitude),
+      !is.na(decimalLongitude)
+    )
+  
+  return(species_occurrence_clean)
+}
+
+add_na_eventdate_to_excluded_data <- function(species_occurrence) {
+  # Let's reuse the same columns/column names as in rabbits
+  add_excluded <- species_occurrence %>% 
+    
+    filter(is.na(eventDate)) %>% 
+    
+    # Add excluded_notes
+    mutate(
+      date = Sys.Date(),
+      
+      excluded_notes = "These data points have a missing eventDate value."
+      )
+  
+  excluded_data <- bind_rows(excluded_data, add_excluded)
+  return(excluded_data)
+}
+
+add_na_spatial_to_excluded_data <- function(species_occurrence) {
+  # Let's reuse the same columns/column names as in rabbits
+  add_excluded <- species_occurrence %>% 
+    
+    filter(
+      is.na(decimalLatitude),
+      is.na(decimalLongitude)
+    ) %>% 
+    
+    # Add excluded_notes
+    mutate(
+      date = Sys.Date(),
+      
+      excluded_notes = "These data points have missing spatial values."
+      )
+  
+  excluded_data <- bind_rows(excluded_data, add_excluded)
+  return(excluded_data)
+}
+```
+
+Now, let's use the functions and remove and log the `NA` values.
+
+```{r}
+rabbits_all_states_clean <- rabbits_all_states %>% 
+  remove_na_values()
+  
+# Initialise empty excluded_data tibble.
+excluded_data <- tibble()
+
+excluded_data <- rabbits_all_states %>% 
+  add_na_eventdate_to_excluded_data()
+
+excluded_data <- rabbits_all_states %>% 
+  add_na_spatial_to_excluded_data()
+
+rabbits_all_states_clean
+excluded_data
+```
+
+### Figuring out which point is in which state
+Now, let's convert `rabbits_all_states_clean` into an sf so we can find out which point is within each state/territory. Then we can use the `st_filter` function to filter out each point that is within each respective state and create a new column called `state` that will tell us which point is in which state.
+
+```{r}
+# Ref [1,2]
+add_state_column <- function(species_all_states_clean_input) {
+  
+  # Make sure both your tibble and shapefile have the same coordinate reference
+  # system (CRS)
+  species_all_states_clean_sf <- st_as_sf(
+  species_all_states_clean_input,
+  coords = c("decimalLongitude", "decimalLatitude"),
+  crs = st_crs(state2021)
+  )
+  
+  # Create a vector of state/territory names
+  state_names <- c(
+    "New South Wales",
+    "Victoria",
+    "Queensland",
+    "South Australia",
+    "Western Australia",
+    "Tasmania",
+    "Northern Territory",
+    "Australian Capital Territory"
+  )
+  
+  # Initialise empty list
+  species_all_states_clean_list <- list()
+  
+  # Ref [3]: Create a separate tibble for all points within each state and
+  # put in list
+  for (state_name in state_names) {
+    species_state_clean <- species_all_states_clean_sf %>% 
+    st_filter({state2021 %>% filter(state_name_2021 == state_name)}) %>% 
+    mutate(state = state_name) %>% 
+    as_tibble()
+    
+    species_all_states_clean_list[[state_name]] <- species_state_clean
+  }
+  
+  # Bind all 8 tibbles back into one big tibble
+  species_all_states_clean_output <- species_all_states_clean_input %>% 
+    
+  # Join the new columns (geometry, state) to the input tibble
+  left_join(
+    {bind_rows(species_all_states_clean_list)},
+    join_by(
+      eventDate,
+      scientificName,
+      taxonConceptID,
+      recordID,
+      dataResourceName,
+      occurrenceStatus
+      )
+    )
+  
+  return(species_all_states_clean_output)
+}
+
+
+
+rabbits_all_states_clean <- rabbits_all_states %>% 
+  remove_na_values() %>% 
+  add_state_column()
+
+rabbits_all_states_clean
+
+
+
+# References:
+# - [1] https://rdrr.io/cran/sf/man/st_as_sf.html
+# - [2] https://chat.openai.com/share/3e22a588-45d1-4959-923b-ac85da5e34b0
+# - [3] https://chat.openai.com/share/81f6f18f-e6e6-4c41-8750-c78e45e0c16e
+```
+
+### Sanity checking the spatial data
+
+Great! Now we have a cleaned tibble, where we have removed values that have missing spatial data and missing `eventDate` values, as well as added a state column indicating, which point is in which state. Let's quickly do some sanity checks on the `state` column.
+
+```{r}
+rabbits_all_states_clean %>% 
+  group_by(state) %>% 
+  count() %>% 
+  arrange(desc(n))
+
+```
+
+It seems like there are several points that are not in any of the state/territory polygons. Let's investigate these as we will likely just exclude these points.
+
+```{r}
+rabbits_all_states_clean <- rabbits_all_states_clean %>% 
+  mutate(
+    state = case_when(
+      is.na(state) ~ "Not within any state/territory",
+      .default = state
+    )
+  )
+
+state2021 %>% 
+  ggplot() +
+  
+  # Ref [1]: Create background polygon of the ACT
+  geom_sf(
+    aes(geometry = geometry)
+  ) +
+  
+  geom_point(
+    data = rabbits_all_states_clean,
+    aes(
+      x = decimalLongitude,
+      y = decimalLatitude,
+      colour = state
+    ),
+    alpha = 0.6
+  ) +
+  
+  scale_colour_viridis_d() +
+  
+  coord_sf() +
+  
+  theme_minimal() +
+  
+  # Ref [2]
+  labs(title = "Rabbit observations in Australia")
+```
+
+Ah hah! Interestingly, the dataset that I am using must not be filtered for just observations in Australia. Good thing we did this sanity check! Let's just show the not within any state/territory points, just to make sure.
+
+```{r}
+rabbits_all_states_clean <- rabbits_all_states_clean %>% 
+  mutate(
+    state = case_when(
+      is.na(state) ~ "Not within any state/territory",
+      .default = state
+    )
+  )
+
+state2021 %>% 
+  ggplot() +
+  
+  # Ref [1]: Create background polygon of the ACT
+  geom_sf(
+    aes(geometry = geometry)
+  ) +
+  
+  geom_point(
+    data = {
+      rabbits_all_states_clean %>%
+        filter(state == "Not within any state/territory")
+      },
+    aes(
+      x = decimalLongitude,
+      y = decimalLatitude,
+      colour = state
+    ),
+    alpha = 0.6
+  ) +
+  
+  scale_colour_viridis_d() +
+  
+  coord_sf() +
+  
+  theme_minimal() +
+  
+  # Ref [2]
+  labs(title = "Rabbit observations in Australia",
+       subtitle = "Only observations that didn't fall within any state/territory")
+```
+
+Interestingly, it seems that there are quite a few observations that must be along the coastline / in the water. Let's just look at just NSW.
+
+```{r}
+rabbits_all_states_clean <- rabbits_all_states_clean %>% 
+  mutate(
+    state = case_when(
+      is.na(state) ~ "Not within any state/territory",
+      .default = state
+    )
+  )
+
+state2021 %>% 
+  ggplot() +
+  
+  # Ref [1]: Create background polygon of the ACT
+  geom_sf(
+    aes(geometry = geometry)
+  ) +
+  
+  geom_point(
+    data = {
+      rabbits_all_states_clean %>%
+        filter(state == "Not within any state/territory")
+      },
+    aes(
+      x = decimalLongitude,
+      y = decimalLatitude,
+      colour = state
+    ),
+    alpha = 0.6
+  ) +
+  
+  scale_colour_viridis_d() +
+  
+  coord_sf(
+    xlim = c()
+    ylim = c()
+  ) +
+  
+  theme_minimal() +
+  
+  # Ref [2]
+  labs(title = "Rabbit observations in Australia")
+```
 
 # References
 
@@ -478,3 +821,4 @@ Create month column
 -   https://inaturalist.ala.org.au/
 -   https://stackoverflow.com/a/52951856/22410914
 -   https://rdrr.io/cran/sf/man/st_as_sf.html
+-   https://chat.openai.com/share/3e22a588-45d1-4959-923b-ac85da5e34b0
