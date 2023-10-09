@@ -1,17 +1,21 @@
 ---
 title: "Data Cleaning"
 author: "Johann Wagner - u6958957"
-date: "2023-10-02"
+date: "`r Sys.Date()`"
 output:  
     html_document:
         toc: true
-        toc_depth: 4
+        toc_depth: 6
         theme: cosmo
         number_sections: false
         toc_float: true
         highlight: pygments
-        fig_width: 8
-        fig_height: 4
+        fig_width: 10
+        fig_height: 6
+        df_print: paged
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 # Word/figure count
@@ -19,6 +23,1186 @@ output:
 Words: [The number of words in your document, calculated using the word_count() function at the end of this document]
 Figures: [The number of figures in your document. You can just count these]
 
-# Location on GitHub
+# Locations on GitHub
 
-[A URL to the root directory of your final project on GitHub]
+-   The RMarkdown file that produced this HTML document can be found here: [data_cleaning.Rmd](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/data_cleaning.Rmd).
+
+# Data Cleaning
+
+The purpose of this .Rmd file is to search and take note/keep a log of any dodgy data points.
+
+## **Package Loading**
+
+If you are unfamiliar with some of these packages, I've left some short code comments for you to find more information. 
+
+```{r Package-Loading, warning = FALSE, messages = FALSE}
+suppressPackageStartupMessages({
+  ### Tidyverse Collection -----------------------------------------------------
+  # The tidyverse is an opinionated collection of R packages designed for
+  # data science. All packages share an underlying design philosophy, grammar,
+  # and data structures.
+  ### https://www.tidyverse.org/
+  library(tidyverse)
+  
+  
+  
+  ### Data Exploration ---------------------------------------------------------
+  # To easily display summary statistics
+  ### https://github.com/ropensci/skimr
+  library(skimr)
+  
+  
+  
+  ### Data Cleaning/Wrangling --------------------------------------------------
+  # To easily examine and clean dirty data
+  ### https://www.rdocumentation.org/packages/janitor/versions/2.2.0
+  library(janitor)
+  
+  # To easily use date-time data
+  ### https://lubridate.tidyverse.org/
+  library(lubridate)
+  
+  # To easily handle categorical variables using factors.
+  ### https://forcats.tidyverse.org/
+  library(forcats)
+  
+  
+  
+  ### Data Visualisation -------------------------------------------------------
+  # To easily use already-made themes for data visualisation
+  ### https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/
+  library(ggthemes)
+  
+  # To combine a scatter plot and a 2D density plot
+  ### https://github.com/LKremer/ggpointdensity
+  library(ggpointdensity)
+  
+  
+  
+  ### Spatial Visualisation ----------------------------------------------------
+  # To easily manipulate spatial data
+  ### https://r-spatial.github.io/sf/
+  library(sf)
+  
+  # This may take a little while to install if you don't have absmapsdata already.
+  # Whilst I'm only using one shapefile from the package, I thought acquiring
+  # the data through a package would be more standardised/reproducible than
+  # downloading it straight from the ABS.
+  options(timeout = 1000)
+  devtools::install_github("wfmackey/absmapsdata")
+  # To easily access the Australian Bureau of Statistics (ABS) spatial structures
+  ### https://github.com/wfmackey/absmapsdata
+  library(absmapsdata)
+  
+  # To easily interact spatial data and ggplot2
+  ### https://paleolimbot.github.io/ggspatial/
+  library(ggspatial)
+  
+  
+  
+  ### Misc ---------------------------------------------------------------------
+  # To easily standardise naming conventions based upon a consistent design
+  # philosophy
+  ### https://github.com/Tazinho/snakecase
+  library(snakecase)
+  
+  # To locate and download species observations from the Atlas of Living
+  # Australia
+  ### https://galah.ala.org.au/
+  library(galah)
+  
+  # To easily enable file referencing in project-oriented workflows
+  ### https://here.r-lib.org/
+  library(here)
+})
+```
+
+## **Data Loading and Sanity Checks**
+
+Packages are all loaded in! Let's read in a specific invasive animal species for a particular state and do some sanity checks. Ideally, we will functionalise this code to do this sanity checks on all the invasive animal species that we end up choosing for each state. Arguably, this data cleaning could be a package/RShiny dashboard in of itself!
+
+The following code is mainly reused and inspired by the [ALA Labs - An exploration of dingo observations in the ALA](https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html).
+
+First, let's log into the Atlas of Australia using the `galah_config()` function.
+
+```{r}
+# Ref [1]
+# Use an Atlas of Australia-registered email (Register at ala.org.au)
+galah_config(email = "johann.wagner@gmail.com")
+
+# References:
+# - [1] https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
+```
+
+### Rabbits in the ACT
+Let's focus on exploring rabbits in the ACT. We will scale to other species and other states/territories later.
+
+```{r}
+# Ref [1, 4]
+# To download data from the ALA
+rabbits <- galah_call() %>%
+  
+  # To conduct a search for the scientific name of the European Rabbit
+  galah_identify("oryctolagus cuniculus") %>% # Ref [2]
+  
+  # Filter records observed in the ACT
+  galah_filter(cl22 == "Australian Capital Territory") %>% 
+  
+  # Pre-applied filter to ensure quality-assured data
+  # the "ALA" profile is designed to exclude lower quality records Ref [3]
+  galah_apply_profile(ALA) %>% 
+  atlas_occurrences()
+
+rabbits
+
+
+
+# References:
+# - [1] https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
+# - [2] https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/692effa3-b719-495f-a86f-ce89e2981652
+# - [3] https://galah.ala.org.au/R/reference/galah_apply_profile.html
+# - [4] https://galah.ala.org.au/R/reference/galah.html
+```
+
+Let's use the `skim()` function to explore this dataset.
+
+```{r}
+skim(rabbits)
+```
+
+Interestingly, it seems that there are two unique `scientificName`, this is unexpected. Similarly, there are also two unique values for `taxonConceptID`. There are 1861 occurrences of rabbits in the ACT from 9 different data providers (`dataResourceName`). The most recent observation is `r rabbits$eventDate %>% max()` and the earliest is `r rabbits$eventDate %>% min()`. All the observations have longitude and latitude values, we will plot these visually in a moment to ensure they are all in the ACT.
+
+It will be good to create a function that checks that each observation is within the spatial boundaries of each respective state/territory. 
+
+#### Potential dodgy rabbit data
+Let's explore what the two unique `scientificName` values are.
+
+```{r}
+rabbits %>% 
+  group_by(scientificName) %>% 
+  count()
+```
+
+Oh wow! This is our first data cleaning pick up! Even with the pre-applied ALA filter we have found an error in one of the values in `scientificName`. 
+Let's find that specific data point.
+
+```{r}
+rabbits %>% 
+  filter(scientificName == "Oryctolagus cuniculus cuniculus")
+```
+
+#### Create suspicious data
+Looking at the `taxonConceptID` values/websites. The "Oryctolagus cuniculus cuniculus" is actually a subspecies, not a typo! Now, that we know it is a subspecies and not a typo, let's note this value down in our `suspicious_data` dataset and reassess later, but keep it in our `rabbits` dataset.
+
+```{r}
+# Let's reuse the same columns/column names as in rabbits
+rabbits_suspicious <- rabbits %>% 
+  filter(recordID == FALSE) %>% 
+  mutate(
+    suspicious_notes = character(),
+    date             = character()
+    ) %>% 
+  
+  # Add the suspicious data
+  add_row({
+    rabbits %>% 
+      filter(scientificName == "Oryctolagus cuniculus cuniculus") %>% 
+      mutate(
+        suspicious_notes = "This is a subspecies of the Oryctolagus cuniculus species and is the only one in the ACT.",
+        date = "2023-10-05"
+        )
+  })
+
+rabbits_suspicious
+```
+This suspicious data point is from the [*iNaturalist Australia*](https://inaturalist.ala.org.au/) data provider, which is a Citizen Science project, so potentially more cautious investigation should go into these observations. Let's continue onto the spatial visualisation.
+
+#### Spatial visualisation of rabbits in the ACT
+
+Let's visualise the rabbits data spatially by creating a map with data points of the observations.
+
+```{r}
+# Ref [1]: Create spatial visualisation of the ACT
+state2021 %>% 
+  filter(state_name_2021 == "Australian Capital Territory") %>% 
+  ggplot() +
+  
+  # Ref [1]: Create background polygon of the ACT
+  geom_sf(
+    aes(geometry = geometry)
+  ) +
+  
+  geom_point(
+    data = rabbits,
+    aes(
+      x = decimalLongitude,
+      y = decimalLatitude
+    ),
+    alpha = 0.6
+  ) +
+  
+  coord_sf() +
+  
+  theme_minimal()
+
+
+
+# References:
+# - [1] https://github.com/wfmackey/absmapsdata/tree/master
+```
+
+Interestingly, it seems like there are a select number of observations outside of the ACT borders, which I assume is Jervis Bay territory. Let's spatially isolate these data points and see if they really are in the Jervis Bay territory.
+
+```{r}
+# Ref [1]: Create spatial visualisation of the ACT
+state2021 %>% 
+  filter(state_name_2021 == "Australian Capital Territory") %>% 
+  ggplot() +
+  
+  # Ref [1]: Create background polygon of the ACT
+  geom_sf(
+    aes(geometry = geometry)
+  ) +
+  
+  # Plot the Jervis Bay polygon
+  geom_sf(
+    data = {
+      suburb2021 %>%
+        filter(suburb_name_2021 == "Jervis Bay")
+      },
+    aes(geometry = geometry)
+  ) +
+  
+  geom_point(
+    data = rabbits,
+    aes(
+      x = decimalLongitude,
+      y = decimalLatitude
+    ),
+    alpha = 0.6
+  ) +
+  
+  coord_sf() +
+  
+  theme_minimal()
+
+
+
+# References:
+# - [1] https://github.com/wfmackey/absmapsdata/tree/master
+```
+
+Hypothesis has been confirmed! The data points are from the Jervis Bay territory. 
+
+#### Exclusion of Jervis Bay territory data
+For the sake/scope of this assignment, we will put these data points into the ` excluded_data` dataset and remove these from our main dataset. Because I really only want to showcase observations in the main state/territory borders, as this RShiny Dashboard tool should be used for macro-scale, not small territories.
+
+Let's create an `sf` data type so that we can use the `st_filter()` function, which filters the spatial data points within a given spatial polygon. In our case, we only want to include the data points that are within the ACT border boundary polygon.
+
+```{r}
+rabbits_sf_clean <- rabbits %>% 
+  
+  # Ref [1]: Convert rabbits tibble into an sf data type
+  st_as_sf(
+    coords = c("decimalLongitude", "decimalLatitude"),
+    crs = "+proj=longlat +datum=WGS84"
+  ) %>% 
+  
+  # Ref [2]: Filter the data points that are within the ACT
+    st_filter({
+      state2021 %>% 
+    filter(state_name_2021 == "Australian Capital Territory")}
+    )
+
+rabbits_sf_clean
+
+
+# References:
+# - [1] https://stackoverflow.com/a/52951856/22410914
+# - [2] https://rdrr.io/cran/sf/man/st_as_sf.html
+```
+We've now filtered out the excluded data points; however, we want to keep using the `tibble` data type, so let's do some joins.
+
+```{r}
+rabbits_clean <- rabbits %>% 
+  
+  # Find all the clean observations
+  right_join(
+    rabbits_sf_clean,
+    join_by(
+      eventDate,
+      scientificName,
+      taxonConceptID,
+      recordID,
+      dataResourceName,
+      occurrenceStatus
+      )
+    )
+
+rabbits_clean
+```
+
+This is now the clean rabbits dataset for the ACT.
+
+Let's look at the excluded datasets.
+
+```{r}
+rabbits_excluded <- rabbits %>% 
+  
+  # Find all the excluded observations
+  anti_join(
+    rabbits_sf_clean,
+    join_by(
+      eventDate,
+      scientificName,
+      taxonConceptID,
+      recordID,
+      dataResourceName,
+      occurrenceStatus
+      )
+    )
+
+rabbits_excluded
+```
+
+Let's plot these points just for sanity checks.
+
+```{r}
+# Ref [1]: Create spatial visualisation of the ACT
+state2021 %>% 
+  filter(state_name_2021 == "Australian Capital Territory") %>% 
+  ggplot() +
+  
+  # Ref [1]: Create background polygon of the ACT
+  geom_sf(
+    aes(geometry = geometry)
+  ) +
+  
+  # Plot the Jervis Bay polygon
+  geom_sf(
+    data = {
+      suburb2021 %>%
+        filter(suburb_name_2021 == "Jervis Bay")
+      },
+    aes(geometry = geometry)
+  ) +
+  
+  geom_point(
+    data = rabbits_excluded,
+    aes(
+      x = decimalLongitude,
+      y = decimalLatitude
+    ),
+    alpha = 0.6
+  ) +
+  
+  coord_sf() +
+  
+  theme_minimal() +
+  
+  labs(title = "Excluded Data Points")
+
+
+
+# References:
+# - [1] https://github.com/wfmackey/absmapsdata/tree/master
+```
+
+It seems like we have picked up a few extra points that seem to be just outside the ACT border boundaries. Because of the scope of the assignment, we will keep excluding all of these points. It is likely that this is either a misalignment with the ACT boundary from the ABS and the mapping data input software used by the data providers. It could also be that the borders have slightly changed in the past as the ABS boundary is the one used in 2021. There could also be an error in the GPS location data that is causing these points to be outside the ACT boundary. Regardless of the reason, due to the scope of this assignment, these points will be excluded.
+
+#### Create excluded data
+
+```{r}
+# Let's reuse the same columns/column names as in rabbits
+rabbits_excluded <- rabbits_excluded %>% 
+  
+  # Add excluded_notes
+  mutate(
+    date = "2023-10-05",
+    
+    excluded_notes = "These data points are outside the ABS ACT boundary. They include points that are just outside the boundary within a few kilometers and points that are in Jervis Bay"
+    )
+
+rabbits_excluded
+```
+
+#### Final Spatial Visualisation
+
+Let's make a final spatial visualisation.
+
+```{r}
+# Ref [1]: Create spatial visualisation of the ACT
+state2021 %>% 
+  filter(state_name_2021 == "Australian Capital Territory") %>% 
+  ggplot() +
+  
+  # Ref [1]: Create background polygon of the ACT
+  geom_sf(
+    aes(geometry = geometry)
+  ) +
+  
+  geom_point(
+    data = rabbits_clean,
+    aes(
+      x = decimalLongitude,
+      y = decimalLatitude
+    ),
+    alpha = 0.6
+  ) +
+  
+  coord_sf() +
+  
+  theme_minimal() +
+  
+  # Ref [2]
+  labs(title = "Rabbit observations in the ACT")
+
+
+
+# References:
+# - [1] https://github.com/wfmackey/absmapsdata/tree/master
+# - [2] https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
+```
+
+## **Scaling from a single state to all of Australia**
+
+Ideally, we want to create functions that do all of this cleaning for us.
+
+### load_galah_occurrence_data function
+Let's start with a function that extracts the raw data for a particular species for all of Australia. We will sort the state/territory later.
+
+```{r}
+load_galah_occurrence_data <- function(
+  # character string of scientific name of species
+  species_name
+  ) {
+  species_occurrence <- galah_call() %>%
+  
+  # To conduct a search for species scientific name
+  galah_identify(species_name) %>% # Ref [2]
+  
+  # Pre-applied filter to ensure quality-assured data
+  # the "ALA" profile is designed to exclude lower quality records Ref [3]
+  galah_apply_profile(ALA) %>% 
+  atlas_occurrences()
+  
+  return(species_occurrence)
+}
+```
+
+### Rabbits in all of Australia
+Let's test the `load_galah_occurrence_data` function.
+
+```{r}
+rabbits_all_states <- load_galah_occurrence_data(
+  species_name = "oryctolagus cuniculus"
+  )
+rabbits_all_states
+```
+
+```{r}
+skim(rabbits_all_states)
+```
+
+It seems like there are some missing values for `decimalLatitude` and `decimalLongitude`, as well as for `eventDate`. Let's explore these values.
+
+```{r}
+rabbits_all_states %>% 
+  filter(is.na(decimalLatitude)) %>% 
+  group_by(dataResourceName) %>% 
+  count() %>% 
+  arrange(desc(n))
+```
+
+```{r}
+rabbits_all_states %>% 
+  filter(is.na(eventDate)) %>% 
+  group_by(dataResourceName) %>% 
+  count() %>% 
+  arrange(desc(n))
+```
+
+It seems that most of these missing values are from museum providers for OZCAM. It also seems that the Tasmanian Values Atlas have not provided any spatial information. Let's put all of these data points into the `excluded_data` dataset.
+
+### remove_na_values and add_na_values_to_excluded_data functions
+Let's create a function that will do this automatically.
+
+```{r}
+remove_na_values <- function(species_occurrence) {
+  species_occurrence_clean <- species_occurrence %>% 
+    filter(
+      !is.na(eventDate),
+      !is.na(decimalLatitude),
+      !is.na(decimalLongitude)
+    )
+  
+  return(species_occurrence_clean)
+}
+
+add_na_eventdate_to_excluded_data <- function(species_occurrence) {
+  # Let's reuse the same columns/column names as in rabbits
+  add_excluded <- species_occurrence %>% 
+    
+    filter(is.na(eventDate)) %>% 
+    
+    # Add excluded_notes
+    mutate(
+      date = Sys.Date(),
+      
+      excluded_notes = "These data points have a missing eventDate value."
+      )
+  
+  excluded_data <- bind_rows(excluded_data, add_excluded)
+  return(excluded_data)
+}
+
+add_na_spatial_to_excluded_data <- function(species_occurrence) {
+  # Let's reuse the same columns/column names as in rabbits
+  add_excluded <- species_occurrence %>% 
+    
+    filter(
+      is.na(decimalLatitude),
+      is.na(decimalLongitude)
+    ) %>% 
+    
+    # Add excluded_notes
+    mutate(
+      date = Sys.Date(),
+      
+      excluded_notes = "These data points have missing spatial values."
+      )
+  
+  excluded_data <- bind_rows(excluded_data, add_excluded)
+  return(excluded_data)
+}
+```
+
+Now, let's use the functions and remove and log the `NA` values.
+
+```{r}
+rabbits_all_states_clean <- rabbits_all_states %>% 
+  remove_na_values()
+  
+# Initialise empty excluded_data tibble.
+excluded_data <- tibble()
+
+excluded_data <- rabbits_all_states %>% 
+  add_na_eventdate_to_excluded_data()
+
+excluded_data <- rabbits_all_states %>% 
+  add_na_spatial_to_excluded_data()
+
+rabbits_all_states_clean
+excluded_data
+```
+
+### Figuring out which point is in which state
+Now, let's convert `rabbits_all_states_clean` into an sf so we can find out which point is within each state/territory. Then we can use the `st_filter` function to filter out each point that is within each respective state and create a new column called `state` that will tell us which point is in which state.
+
+```{r}
+# Ref [1,2]
+add_state_column <- function(species_all_states_clean_input) {
+  
+  # Make sure both your tibble and shapefile have the same coordinate reference
+  # system (CRS)
+  species_all_states_clean_sf <- st_as_sf(
+  species_all_states_clean_input,
+  coords = c("decimalLongitude", "decimalLatitude"),
+  crs = st_crs(state2021)
+  )
+  
+  # Create a vector of state/territory names
+  state_names <- c(
+    "New South Wales",
+    "Victoria",
+    "Queensland",
+    "South Australia",
+    "Western Australia",
+    "Tasmania",
+    "Northern Territory",
+    "Australian Capital Territory"
+  )
+  
+  # Initialise empty list
+  species_all_states_clean_list <- list()
+  
+  # Ref [3]: Create a separate tibble for all points within each state and
+  # put in list
+  for (state_name in state_names) {
+    species_state_clean <- species_all_states_clean_sf %>% 
+    st_filter({state2021 %>% filter(state_name_2021 == state_name)}) %>% 
+    mutate(state = state_name) %>% 
+    as_tibble()
+    
+    species_all_states_clean_list[[state_name]] <- species_state_clean
+  }
+  
+  # Bind all 8 tibbles back into one big tibble
+  species_all_states_clean_output <- species_all_states_clean_input %>% 
+    
+  # Join the new columns (geometry, state) to the input tibble
+  left_join(
+    {bind_rows(species_all_states_clean_list)},
+    join_by(
+      eventDate,
+      scientificName,
+      taxonConceptID,
+      recordID,
+      dataResourceName,
+      occurrenceStatus
+      )
+    )
+  
+  return(species_all_states_clean_output)
+}
+
+
+
+rabbits_all_states_clean <- rabbits_all_states %>% 
+  remove_na_values() %>% 
+  add_state_column()
+
+rabbits_all_states_clean
+
+
+
+# References:
+# - [1] https://rdrr.io/cran/sf/man/st_as_sf.html
+# - [2] https://chat.openai.com/share/3e22a588-45d1-4959-923b-ac85da5e34b0
+# - [3] https://chat.openai.com/share/81f6f18f-e6e6-4c41-8750-c78e45e0c16e
+```
+
+### Sanity checking the spatial data
+
+Great! Now we have a cleaned tibble, where we have removed values that have missing spatial data and missing `eventDate` values, as well as added a state column indicating, which point is in which state. Let's quickly do some sanity checks on the `state` column.
+
+```{r}
+rabbits_all_states_clean %>% 
+  group_by(state) %>% 
+  count() %>% 
+  arrange(desc(n))
+
+```
+
+It seems like there are several points that are not in any of the state/territory polygons. Let's investigate these as we will likely just exclude these points.
+
+```{r}
+state2021 %>% 
+  ggplot() +
+  
+  geom_sf(
+    aes(geometry = geometry)
+  ) +
+  
+  geom_point(
+    data = {
+      rabbits_all_states_clean %>% 
+        mutate(
+          state = case_when(
+            is.na(state) ~ "Not within any state/territory",
+            .default = state
+          )
+        )
+      },
+    aes(
+      x = decimalLongitude,
+      y = decimalLatitude,
+      colour = state
+    ),
+    alpha = 0.6
+  ) +
+  
+  scale_colour_viridis_d() +
+  
+  coord_sf() +
+  
+  theme_minimal() +
+  
+  labs(title = "Rabbit observations in Australia")
+```
+
+Ah hah! Interestingly, the dataset that I am using must not be filtered for just observations in Australia. Good thing we did this sanity check! Let's just show the not within any state/territory points, just to make sure.
+
+```{r}
+state2021 %>% 
+  ggplot() +
+  
+  geom_sf(
+    aes(geometry = geometry)
+  ) +
+  
+  geom_point(
+    data = {
+      rabbits_all_states_clean %>% 
+        mutate(
+          state = case_when(
+            is.na(state) ~ "Not within any state/territory",
+            .default = state
+          )
+        ) %>% 
+        filter(state == "Not within any state/territory")
+      },
+    aes(
+      x = decimalLongitude,
+      y = decimalLatitude,
+      colour = state
+    ),
+    alpha = 0.6
+  ) +
+  
+  scale_colour_viridis_d() +
+  
+  coord_sf() +
+  
+  theme_minimal() +
+  
+  labs(title = "Rabbit observations in Australia",
+       subtitle = "Only observations that didn't fall within any state/territory")
+```
+### Ocean Rabbits? Let's exclude them!
+Interestingly, it seems that there are quite a few observations that must be along the coastline / in the water. Let's just look at just the southern coastline of Victoria.
+
+```{r}
+state2021 %>% 
+  ggplot() +
+  
+  geom_sf(
+    aes(geometry = geometry)
+  ) +
+  
+  geom_point(
+    data = {
+      rabbits_all_states_clean %>% 
+        mutate(
+          state = case_when(
+            is.na(state) ~ "Not within any state/territory",
+            .default = state
+          )
+        ) %>% 
+        filter(state == "Not within any state/territory")
+      },
+    aes(
+      x = decimalLongitude,
+      y = decimalLatitude,
+      colour = state
+    ),
+    alpha = 0.6
+  ) +
+  
+  scale_colour_viridis_d() +
+  
+  coord_sf(
+    xlim = c(142.0, 150.0),
+    ylim = c(-40, -35)
+  ) +
+  
+  theme_minimal() +
+  
+  labs(title = "Rabbit observations in southern Victoria",
+       subtitle = "Points that are not within any state/territory")
+```
+
+I have never heard of any ocean rabbits, so let's just take a blanket assumption and exclude these results. There are probably some uncertainty in the GPS measurements or data entry errors or potentially islands that don't come up on the ABS maps or even a misalignment between the ABS data and the ALA spatial data. Regardless, of the reason, let's put all of these measurements into the `excluded_data` dataset.
+
+### add_not_within_abs_map_to_excluded_data
+
+Let's create a function that adds these "ocean rabbits" to the `excluded_data` dataset.
+
+```{r}
+remove_not_within_abs_map_values <- function(species_all_states_clean) {
+  species_all_states_clean <- species_all_states_clean %>% 
+    filter(
+      !is.na(state)
+    )
+  
+  return(species_all_states_clean)
+}
+
+add_not_within_abs_map_to_excluded_data <- function(species_all_states_clean) {
+  # Let's reuse the same columns/column names as in rabbits
+  add_excluded <- species_all_states_clean %>% 
+    
+    filter(is.na(state)) %>% 
+    
+    # Add excluded_notes
+    mutate(
+      date = Sys.Date(),
+      
+      excluded_notes = "These data points are not within any of the 8 states and territories ABS borders. They are either overseas data points or are just off the coastline of Australia."
+      )
+  
+  excluded_data <- bind_rows(excluded_data, add_excluded)
+  return(excluded_data)
+}
+```
+
+
+```{r}
+excluded_data <- rabbits_all_states_clean %>% 
+  add_not_within_abs_map_to_excluded_data()
+```
+
+Now our final set of functions are as follows:
+```{r}
+rabbits_all_states_clean <- rabbits_all_states %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  remove_not_within_abs_map_values()
+
+skim(rabbits_all_states_clean)
+```
+Nice, all columns are complete (don't have missing values). There are 109,891 unique `recordID` values and the same amount of observations, so we haven't accidentally duplicated any values. Interestingly, there are 84,558 unique `geometry` values, so there must be several thousand observations that have overlapping locations. There are 8 `state` values, which makes sense.
+
+Plenty of sense checks, I'm happy with the data cleaning of rabbits in Australia!
+
+Let's check our excluded data.
+```{r}
+excluded_data %>% 
+  group_by(excluded_notes) %>% 
+  count()
+```
+
+## **Scaling to other species!**
+
+### Apply all the functions to the European Red Fox
+Now that we've cleaned the data for rabbits for all of Australia, let's take our functions and apply them to a different species! Let's try foxes (vulpes vulpes).
+
+```{r}
+# Raw Data
+raw_foxes <- load_galah_occurrence_data(
+  species_name = "vulpes vulpes"
+  )
+
+# Processed Data
+clean_foxes <- raw_foxes %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  remove_not_within_abs_map_values()
+
+# Excluded Data
+excluded_data <- raw_foxes %>% 
+  add_na_eventdate_to_excluded_data()
+
+excluded_data <- raw_foxes %>% 
+  add_na_spatial_to_excluded_data()
+
+excluded_data <- raw_foxes %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  add_not_within_abs_map_to_excluded_data()
+```
+
+### Sanity checks on the foxes data
+Let's look at the raw data
+```{r}
+skim(raw_foxes)
+```
+
+Sweet! There are 127,963 fox observations in this dataset. There are 152 missing spatial data. There are also 664 missing dates. So this is what we should expect as counts in the `excluded_data` dataset. Let's check!
+
+```{r}
+excluded_data %>% 
+  group_by(scientificName, excluded_notes) %>% 
+  count()
+```
+
+Amazing! Our functions works!!! Let's look at our cleaned data.
+
+```{r}
+clean_foxes %>% skim()
+```
+
+Everything looks good using `skim()` function.
+
+## **Scaling to a lot more species!**
+Time to now apply these functions to a few more species. Let's find a bunch more [invasive animal species in Australia](https://en.wikipedia.org/wiki/Invasive_species_in_Australia) and put their scientific names into a vector. Then we can use this vector to run our functions and output the data as a list of different tibbles.
+
+Let's also create a new column indicating which species is which because there are some species that have multiple different scientific names.
+
+These are the species I want to focus on:
+
+-   European Rabbit (Oryctolagus cuniculus)
+-   European Red Fox (Vulpes vulpes)
+-   Cane Toad (Rhinella marina)
+-   Feral Cat (Felis catus)
+-   Feral Horse (Equus caballus)
+-   Feral Pig (Sus scrofa)
+-   Red Imported Fire Ant (Solenopsis invicta)
+
+### European Rabbit
+This will take a few minutes to run.
+```{r}
+# Raw Data
+raw_rabbits <- load_galah_occurrence_data(
+  species_name = "Oryctolagus cuniculus"
+  )
+
+# Processed Data
+clean_rabbits <- raw_rabbits %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  remove_not_within_abs_map_values() %>% 
+  mutate(
+    simpleName = "European Rabbit"
+  )
+
+# Excluded Data
+excluded_data <- raw_rabbits %>% 
+  add_na_eventdate_to_excluded_data()
+
+excluded_data <- raw_rabbits %>% 
+  add_na_spatial_to_excluded_data()
+
+excluded_data <- raw_rabbits %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  add_not_within_abs_map_to_excluded_data()
+```
+
+### European Red Fox
+This will take a few minutes to run.
+```{r}
+# Raw Data
+raw_foxes <- load_galah_occurrence_data(
+  species_name = "vulpes vulpes"
+  )
+
+# Processed Data
+clean_foxes <- raw_foxes %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  remove_not_within_abs_map_values() %>% 
+  mutate(
+    simpleName = "European Red Fox"
+  )
+
+# Excluded Data
+excluded_data <- raw_foxes %>% 
+  add_na_eventdate_to_excluded_data()
+
+excluded_data <- raw_foxes %>% 
+  add_na_spatial_to_excluded_data()
+
+excluded_data <- raw_foxes %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  add_not_within_abs_map_to_excluded_data()
+```
+
+### Cane Toad
+```{r}
+# Raw Data
+raw_cane_toads <- load_galah_occurrence_data(
+  species_name = "rhinella marina"
+  )
+
+# Processed Data
+clean_cane_toads <- raw_cane_toads %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  remove_not_within_abs_map_values() %>% 
+  mutate(
+    simpleName = "Cane Toad"
+  )
+
+# Excluded Data
+excluded_data <- raw_cane_toads %>% 
+  add_na_eventdate_to_excluded_data()
+
+excluded_data <- raw_cane_toads %>% 
+  add_na_spatial_to_excluded_data()
+
+excluded_data <- raw_cane_toads %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  add_not_within_abs_map_to_excluded_data()
+```
+
+### Feral Cat
+```{r}
+# Raw Data
+raw_cats <- load_galah_occurrence_data(
+  species_name = "felis catus"
+  )
+
+# Processed Data
+clean_cats <- raw_cats %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  remove_not_within_abs_map_values() %>% 
+  mutate(
+    simpleName = "Feral Cat"
+  )
+
+# Excluded Data
+excluded_data <- raw_cats %>% 
+  add_na_eventdate_to_excluded_data()
+
+excluded_data <- raw_cats %>% 
+  add_na_spatial_to_excluded_data()
+
+excluded_data <- raw_cats %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  add_not_within_abs_map_to_excluded_data()
+```
+
+### Feral Horse
+```{r}
+# Raw Data
+raw_horses <- load_galah_occurrence_data(
+  species_name = "equus caballus"
+  )
+
+# Processed Data
+clean_horses <- raw_horses %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  remove_not_within_abs_map_values() %>% 
+  mutate(
+    simpleName = "Feral Horse"
+  )
+
+# Excluded Data
+excluded_data <- raw_horses %>% 
+  add_na_eventdate_to_excluded_data()
+
+excluded_data <- raw_horses %>% 
+  add_na_spatial_to_excluded_data()
+
+excluded_data <- raw_horses %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  add_not_within_abs_map_to_excluded_data()
+```
+
+### Feral Pig
+```{r}
+# Raw Data
+raw_pigs <- load_galah_occurrence_data(
+  species_name = "sus scrofa"
+  )
+
+# Processed Data
+clean_pigs <- raw_pigs %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  remove_not_within_abs_map_values() %>% 
+  mutate(
+    simpleName = "Feral Pig"
+  )
+
+# Excluded Data
+excluded_data <- raw_pigs %>% 
+  add_na_eventdate_to_excluded_data()
+
+excluded_data <- raw_pigs %>% 
+  add_na_spatial_to_excluded_data()
+
+excluded_data <- raw_pigs %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  add_not_within_abs_map_to_excluded_data()
+```
+
+### Red Imported Fire Ant
+```{r}
+# Raw Data
+raw_red_fire_ants <- load_galah_occurrence_data(
+  species_name = "solenopsis invicta"
+  )
+
+# Processed Data
+clean_red_fire_ants <- raw_red_fire_ants %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  remove_not_within_abs_map_values() %>% 
+  mutate(
+    simpleName = "Red Imported Fire Ant"
+  )
+
+# Excluded Data
+excluded_data <- raw_red_fire_ants %>% 
+  add_na_eventdate_to_excluded_data()
+
+excluded_data <- raw_red_fire_ants %>% 
+  add_na_spatial_to_excluded_data()
+
+excluded_data <- raw_red_fire_ants %>% 
+  remove_na_values() %>% 
+  add_state_column() %>% 
+  add_not_within_abs_map_to_excluded_data()
+```
+
+## **Bulk-Sanity Checks on the clean data**
+
+Let's put all of the cleaned datasets into one big tibble
+```{r}
+clean_invasive_species_data <- clean_rabbits %>% 
+  bind_rows(
+    clean_foxes,
+    clean_cane_toads,
+    clean_cats,
+    clean_horses,
+    clean_pigs,
+    clean_red_fire_ants
+  )
+
+clean_invasive_species_data
+```
+### Quick skim check
+Great! Looking good! Let's do a quick `skim()`.
+
+```{r}
+skim(clean_invasive_species_data)
+```
+
+Excellent! There are 327,522 rows and the same amount of unique `recordID` values. There are 8 `state` values, which makes sense! There are 7 `simpleName` values, which makes sense as we only pulled 7 different invasive species.
+
+### Quick visualisation check
+Let's visually display all the data.
+
+```{r}
+state2021 %>% 
+  filter(!state_code_2021 %in% c("9", "Z")) %>% 
+  ggplot() +
+  
+  # Ref [1]: Create background polygon of the ACT
+  geom_sf(
+    aes(geometry = geometry)
+  ) +
+  
+  geom_point(
+    data = clean_invasive_species_data,
+    aes(
+      x = decimalLongitude,
+      y = decimalLatitude,
+      colour = simpleName
+    ),
+    alpha = 0.2
+  ) +
+  
+  coord_sf() +
+  
+  theme_minimal() +
+  
+  facet_wrap(vars(simpleName)) +
+  
+  labs(title = "Seven Invasive Animal Species in Australia")
+```
+
+Fantastic! It seems that there are a few observations that are to the east of the NSW border, which is likely an island. Very interesting distributions across Australia for all the different species.
+
+I think the data cleaning is now complete! We've excluded a bunch of different data points that don't fall into the state/territory borders of Australia and also excluded points that have `NA` values for their spatial longitude and latitude and don't have an observation date.
+
+# References
+
+-   An exploration of dingo observations in the ALA https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html (Accessed: 2023-10-05)
+-   https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/692effa3-b719-495f-a86f-ce89e2981652 (Accessed: 2023-10-05)
+-   https://galah.ala.org.au/R/reference/galah_apply_profile.html (Accessed: 2023-10-05)
+-   https://galah.ala.org.au/R/reference/galah.html (Accessed: 2023-10-05)
+-   https://github.com/wfmackey/absmapsdata/tree/master (Accessed: 2023-10-05)
+-   https://inaturalist.ala.org.au/
+-   https://stackoverflow.com/a/52951856/22410914
+-   https://rdrr.io/cran/sf/man/st_as_sf.html
+-   https://chat.openai.com/share/3e22a588-45d1-4959-923b-ac85da5e34b0
