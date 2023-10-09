@@ -36,6 +36,12 @@ Figures: [The number of figures in your document. You can just count these]
 [Explains how and where to get the exact raw data you got]
 [Is reproducible by a person (required) and a machine (ideally)]
 
+2. In your main .Rmd file make a Raw Data section
+3. Write down in that how to get the raw data
+• Note the DOI or URL for the data
+• Give details of exactly which file(s) someone needs to download so that they could recreate
+your raw_data folder
+
 # Data wrangling
 
 [R chunks and prose which:]
