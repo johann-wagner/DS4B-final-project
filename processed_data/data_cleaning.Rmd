@@ -524,22 +524,18 @@ rabbits_all_states %>%
 
 It seems that most of these missing values are from museum providers for OZCAM. It also seems that the Tasmanian Values Atlas have not provided any spatial information. Let's put all of these data points into the `excluded_data` dataset.
 
-### remove_na_values and add_na_values_to_excluded_data functions
+### remove_na_date_and_spatial and add_na_values_to_excluded_data functions
 Let's create a function that will do this automatically.
 
 ```{r}
-remove_na_values <- function(species_occurrence) {
+remove_na_date_and_spatial <- function(species_occurrence) {
   species_occurrence_clean <- species_occurrence %>% 
-    filter(
-      !is.na(eventDate),
-      !is.na(decimalLatitude),
-      !is.na(decimalLongitude)
-    )
+    filter(!is.na(eventDate),!is.na(decimalLatitude),!is.na(decimalLongitude))
   
   return(species_occurrence_clean)
 }
 
-add_na_eventdate_to_excluded_data <- function(species_occurrence) {
+add_na_date_to_excluded_data <- function(species_occurrence) {
   # Let's reuse the same columns/column names as in rabbits
   add_excluded <- species_occurrence %>% 
     
@@ -547,7 +543,7 @@ add_na_eventdate_to_excluded_data <- function(species_occurrence) {
     
     # Add excluded_notes
     mutate(
-      date = Sys.Date(),
+      date           = Sys.Date(),
       
       excluded_notes = "These data points have a missing eventDate value."
       )
@@ -567,7 +563,7 @@ add_na_spatial_to_excluded_data <- function(species_occurrence) {
     
     # Add excluded_notes
     mutate(
-      date = Sys.Date(),
+      date           = Sys.Date(),
       
       excluded_notes = "These data points have missing spatial values."
       )
@@ -581,13 +577,15 @@ Now, let's use the functions and remove and log the `NA` values.
 
 ```{r}
 rabbits_all_states_clean <- rabbits_all_states %>% 
-  remove_na_values()
+  filter(if_all(
+    c(eventDate, decimalLatitude, decimalLongitude), ~ !is.na(.))
+         )
   
 # Initialise empty excluded_data tibble.
 excluded_data <- tibble()
 
 excluded_data <- rabbits_all_states %>% 
-  add_na_eventdate_to_excluded_data()
+  add_na_date_to_excluded_data()
 
 excluded_data <- rabbits_all_states %>% 
   add_na_spatial_to_excluded_data()
@@ -601,7 +599,7 @@ Now, let's convert `rabbits_all_states_clean` into an sf so we can find out whic
 
 ```{r}
 # Ref [1,2]
-add_state_column <- function(species_all_states_clean_input) {
+create_state_column <- function(species_all_states_clean_input) {
   
   # Make sure both your tibble and shapefile have the same coordinate reference
   # system (CRS)
@@ -659,8 +657,8 @@ add_state_column <- function(species_all_states_clean_input) {
 
 
 rabbits_all_states_clean <- rabbits_all_states %>% 
-  remove_na_values() %>% 
-  add_state_column()
+  filter(!is.na(eventDate),!is.na(decimalLatitude),!is.na(decimalLongitude)) %>% 
+  create_state_column()
 
 rabbits_all_states_clean
 
@@ -809,15 +807,6 @@ I have never heard of any ocean rabbits, so let's just take a blanket assumption
 Let's create a function that adds these "ocean rabbits" to the `excluded_data` dataset.
 
 ```{r}
-remove_not_within_abs_map_values <- function(species_all_states_clean) {
-  species_all_states_clean <- species_all_states_clean %>% 
-    filter(
-      !is.na(state)
-    )
-  
-  return(species_all_states_clean)
-}
-
 add_not_within_abs_map_to_excluded_data <- function(species_all_states_clean) {
   # Let's reuse the same columns/column names as in rabbits
   add_excluded <- species_all_states_clean %>% 
@@ -845,9 +834,11 @@ excluded_data <- rabbits_all_states_clean %>%
 Now our final set of functions are as follows:
 ```{r}
 rabbits_all_states_clean <- rabbits_all_states %>% 
-  remove_na_values() %>% 
-  add_state_column() %>% 
-  remove_not_within_abs_map_values()
+  filter(if_all(
+    c(eventDate, decimalLatitude, decimalLongitude), ~ !is.na(.))
+    ) %>% 
+  create_state_column() %>% 
+  filter(!is.na(state))
 
 skim(rabbits_all_states_clean)
 ```
@@ -875,20 +866,24 @@ raw_foxes <- load_galah_occurrence_data(
 
 # Processed Data
 clean_foxes <- raw_foxes %>% 
-  remove_na_values() %>% 
-  add_state_column() %>% 
-  remove_not_within_abs_map_values()
+  filter(if_all(
+    c(eventDate, decimalLatitude, decimalLongitude), ~ !is.na(.))
+    ) %>% 
+  create_state_column() %>% 
+  filter(!is.na(state))
 
 # Excluded Data
 excluded_data <- raw_foxes %>% 
-  add_na_eventdate_to_excluded_data()
+  add_na_date_to_excluded_data()
 
 excluded_data <- raw_foxes %>% 
   add_na_spatial_to_excluded_data()
 
 excluded_data <- raw_foxes %>% 
-  remove_na_values() %>% 
-  add_state_column() %>% 
+  filter(if_all(
+    c(eventDate, decimalLatitude, decimalLongitude), ~ !is.na(.))
+    ) %>% 
+  create_state_column() %>% 
   add_not_within_abs_map_to_excluded_data()
 ```
 
@@ -939,23 +934,27 @@ raw_rabbits <- load_galah_occurrence_data(
 
 # Processed Data
 clean_rabbits <- raw_rabbits %>% 
-  remove_na_values() %>% 
-  add_state_column() %>% 
-  remove_not_within_abs_map_values() %>% 
+  filter(if_all(
+    c(eventDate, decimalLatitude, decimalLongitude), ~ !is.na(.))
+    ) %>% 
+  create_state_column() %>% 
+  filter(!is.na(state)) %>% 
   mutate(
     simpleName = "European Rabbit"
   )
 
 # Excluded Data
 excluded_data <- raw_rabbits %>% 
-  add_na_eventdate_to_excluded_data()
+  add_na_date_to_excluded_data()
 
 excluded_data <- raw_rabbits %>% 
   add_na_spatial_to_excluded_data()
 
 excluded_data <- raw_rabbits %>% 
-  remove_na_values() %>% 
-  add_state_column() %>% 
+  filter(if_all(
+    c(eventDate, decimalLatitude, decimalLongitude), ~ !is.na(.))
+    ) %>% 
+  create_state_column() %>% 
   add_not_within_abs_map_to_excluded_data()
 ```
 
@@ -969,23 +968,27 @@ raw_foxes <- load_galah_occurrence_data(
 
 # Processed Data
 clean_foxes <- raw_foxes %>% 
-  remove_na_values() %>% 
-  add_state_column() %>% 
-  remove_not_within_abs_map_values() %>% 
+  filter(if_all(
+    c(eventDate, decimalLatitude, decimalLongitude), ~ !is.na(.))
+    ) %>% 
+  create_state_column() %>% 
+  filter(!is.na(state)) %>% 
   mutate(
     simpleName = "European Red Fox"
   )
 
 # Excluded Data
 excluded_data <- raw_foxes %>% 
-  add_na_eventdate_to_excluded_data()
+  add_na_date_to_excluded_data()
 
 excluded_data <- raw_foxes %>% 
   add_na_spatial_to_excluded_data()
 
 excluded_data <- raw_foxes %>% 
-  remove_na_values() %>% 
-  add_state_column() %>% 
+  filter(if_all(
+    c(eventDate, decimalLatitude, decimalLongitude), ~ !is.na(.))
+    ) %>% 
+  create_state_column() %>% 
   add_not_within_abs_map_to_excluded_data()
 ```
 
@@ -998,23 +1001,27 @@ raw_cane_toads <- load_galah_occurrence_data(
 
 # Processed Data
 clean_cane_toads <- raw_cane_toads %>% 
-  remove_na_values() %>% 
-  add_state_column() %>% 
-  remove_not_within_abs_map_values() %>% 
+  filter(if_all(
+    c(eventDate, decimalLatitude, decimalLongitude), ~ !is.na(.))
+    ) %>% 
+  create_state_column() %>% 
+  filter(!is.na(state)) %>% 
   mutate(
     simpleName = "Cane Toad"
   )
 
 # Excluded Data
 excluded_data <- raw_cane_toads %>% 
-  add_na_eventdate_to_excluded_data()
+  add_na_date_to_excluded_data()
 
 excluded_data <- raw_cane_toads %>% 
   add_na_spatial_to_excluded_data()
 
 excluded_data <- raw_cane_toads %>% 
-  remove_na_values() %>% 
-  add_state_column() %>% 
+  filter(if_all(
+    c(eventDate, decimalLatitude, decimalLongitude), ~ !is.na(.))
+    ) %>% 
+  create_state_column() %>% 
   add_not_within_abs_map_to_excluded_data()
 ```
 
@@ -1027,23 +1034,27 @@ raw_cats <- load_galah_occurrence_data(
 
 # Processed Data
 clean_cats <- raw_cats %>% 
-  remove_na_values() %>% 
-  add_state_column() %>% 
-  remove_not_within_abs_map_values() %>% 
+  filter(if_all(
+    c(eventDate, decimalLatitude, decimalLongitude), ~ !is.na(.))
+    ) %>% 
+  create_state_column() %>% 
+  filter(!is.na(state)) %>% 
   mutate(
     simpleName = "Feral Cat"
   )
 
 # Excluded Data
 excluded_data <- raw_cats %>% 
-  add_na_eventdate_to_excluded_data()
+  add_na_date_to_excluded_data()
 
 excluded_data <- raw_cats %>% 
   add_na_spatial_to_excluded_data()
 
 excluded_data <- raw_cats %>% 
-  remove_na_values() %>% 
-  add_state_column() %>% 
+  filter(if_all(
+    c(eventDate, decimalLatitude, decimalLongitude), ~ !is.na(.))
+    ) %>% 
+  create_state_column() %>% 
   add_not_within_abs_map_to_excluded_data()
 ```
 
@@ -1056,23 +1067,27 @@ raw_horses <- load_galah_occurrence_data(
 
 # Processed Data
 clean_horses <- raw_horses %>% 
-  remove_na_values() %>% 
-  add_state_column() %>% 
-  remove_not_within_abs_map_values() %>% 
+  filter(if_all(
+    c(eventDate, decimalLatitude, decimalLongitude), ~ !is.na(.))
+    ) %>% 
+  create_state_column() %>% 
+  filter(!is.na(state)) %>% 
   mutate(
     simpleName = "Feral Horse"
   )
 
 # Excluded Data
 excluded_data <- raw_horses %>% 
-  add_na_eventdate_to_excluded_data()
+  add_na_date_to_excluded_data()
 
 excluded_data <- raw_horses %>% 
   add_na_spatial_to_excluded_data()
 
 excluded_data <- raw_horses %>% 
-  remove_na_values() %>% 
-  add_state_column() %>% 
+  filter(if_all(
+    c(eventDate, decimalLatitude, decimalLongitude), ~ !is.na(.))
+    ) %>% 
+  create_state_column() %>% 
   add_not_within_abs_map_to_excluded_data()
 ```
 
@@ -1085,23 +1100,27 @@ raw_pigs <- load_galah_occurrence_data(
 
 # Processed Data
 clean_pigs <- raw_pigs %>% 
-  remove_na_values() %>% 
-  add_state_column() %>% 
-  remove_not_within_abs_map_values() %>% 
+  filter(if_all(
+    c(eventDate, decimalLatitude, decimalLongitude), ~ !is.na(.))
+    ) %>% 
+  create_state_column() %>% 
+  filter(!is.na(state)) %>% 
   mutate(
     simpleName = "Feral Pig"
   )
 
 # Excluded Data
 excluded_data <- raw_pigs %>% 
-  add_na_eventdate_to_excluded_data()
+  add_na_date_to_excluded_data()
 
 excluded_data <- raw_pigs %>% 
   add_na_spatial_to_excluded_data()
 
 excluded_data <- raw_pigs %>% 
-  remove_na_values() %>% 
-  add_state_column() %>% 
+  filter(if_all(
+    c(eventDate, decimalLatitude, decimalLongitude), ~ !is.na(.))
+    ) %>% 
+  create_state_column() %>% 
   add_not_within_abs_map_to_excluded_data()
 ```
 
@@ -1114,23 +1133,27 @@ raw_red_fire_ants <- load_galah_occurrence_data(
 
 # Processed Data
 clean_red_fire_ants <- raw_red_fire_ants %>% 
-  remove_na_values() %>% 
-  add_state_column() %>% 
-  remove_not_within_abs_map_values() %>% 
+  filter(if_all(
+    c(eventDate, decimalLatitude, decimalLongitude), ~ !is.na(.))
+    ) %>% 
+  create_state_column() %>% 
+  filter(!is.na(state)) %>% 
   mutate(
     simpleName = "Red Imported Fire Ant"
   )
 
 # Excluded Data
 excluded_data <- raw_red_fire_ants %>% 
-  add_na_eventdate_to_excluded_data()
+  add_na_date_to_excluded_data()
 
 excluded_data <- raw_red_fire_ants %>% 
   add_na_spatial_to_excluded_data()
 
 excluded_data <- raw_red_fire_ants %>% 
-  remove_na_values() %>% 
-  add_state_column() %>% 
+  filter(if_all(
+    c(eventDate, decimalLatitude, decimalLongitude), ~ !is.na(.))
+    ) %>% 
+  create_state_column() %>% 
   add_not_within_abs_map_to_excluded_data()
 ```
 
@@ -1191,7 +1214,7 @@ state2021 %>%
   labs(title = "Seven Invasive Animal Species in Australia")
 ```
 
-Fantastic! It seems that there are a few observations that are to the east of the NSW border, which is likely an island. Very interesting distributions across Australia for all the different species.
+Fantastic! It seems that there are a few observations that are to the east of the NSW border, which is likely an island. Very interesting distributions if_all Australia for all the different species.
 
 I think the data cleaning is now complete! We've excluded a bunch of different data points that don't fall into the state/territory borders of Australia and also excluded points that have `NA` values for their spatial longitude and latitude and don't have an observation date.
 
