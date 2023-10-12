@@ -22,7 +22,7 @@ library(shiny)
 
 
 
-# Define UI for application that draws a histogram
+# Ref [1]: Define UI for application that draws a histogram
 fluidPage(
 
     # Application title
@@ -47,3 +47,6 @@ fluidPage(
         )
     )
 )
+
+# References:
+# - [1] https://mastering-shiny.org/basic-app.html

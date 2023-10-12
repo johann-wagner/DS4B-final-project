@@ -22,7 +22,7 @@ library(shiny)
 
 
 
-# Define server logic required to draw a histogram
+# Ref [3]: Define server logic required to draw a histogram
 function(input, output, session) {
 
     output$spatial_visualisation <- renderPlot({
@@ -82,3 +82,4 @@ function(input, output, session) {
 # References:
 # - [1] https://github.com/wfmackey/absmapsdata/tree/master
 # - [2] https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
+# - [3] https://mastering-shiny.org/basic-app.html
