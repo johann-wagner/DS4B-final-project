@@ -31,6 +31,8 @@ Figures: [The number of figures in your document. You can just count these]
 
 The purpose of this .Rmd file is to search and take note/keep a log of any dodgy data points.
 
+Note: Because the raw data from ALA is already in a tidy format and each species has its own API pull and tibble, it was decided that tidied_data.csv would be a simple row bind of all seven tibbles.
+
 ## **Package Loading**
 
 If you are unfamiliar with some of these packages, I've left some short code comments for you to find more information. 
