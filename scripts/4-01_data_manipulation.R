@@ -100,7 +100,8 @@ dashboard_data <- cleaned_data %>%
     # Create month column
     month = eventDate %>% 
       as_date() %>% 
-      month()
+      month(label = TRUE) %>% 
+      as_factor()
     )
 
 
