@@ -41,6 +41,10 @@ library(lubridate)
 ### https://forcats.tidyverse.org/
 library(forcats)
 
+# To easily interprete strings that are small, fast, and dependency-free
+### https://glue.tidyverse.org/
+library(glue)
+
 
 
 ### Data Visualisation -------------------------------------------------------
