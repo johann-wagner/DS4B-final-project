@@ -102,7 +102,7 @@ library(here)
 # To load the species occurrence data of any given species within the Atlas
 # of Living Australia database.
 source(
-  here(
+  here::here(
     "scripts",
     "custom_functions",
     "load_galah_occurrence_data.R"
@@ -118,7 +118,7 @@ source(
 # To create a state column indicating which state each occurrence observation
 # was recorded in based on the spatial longitude and latitude data.
 source(
-  here(
+  here::here(
     "scripts",
     "custom_functions",
     "create_state_column.R"
@@ -135,7 +135,7 @@ source(
 # Note: This does not remove/filter any data from the input data, this only
 #       adds data to the excluded_data dataset.
 source(
-  here(
+  here::here(
     "scripts",
     "custom_functions",
     "add_na_date_to_excluded_data.R"
@@ -153,7 +153,7 @@ source(
 # Note: This does not remove/filter any data from the input data, this only
 #       adds data to the excluded_data dataset.
 source(
-  here(
+  here::here(
     "scripts",
     "custom_functions",
     "add_na_spatial_to_excluded_data.R"
@@ -170,11 +170,25 @@ source(
 # Note: This does not remove/filter any data from the input data, this only
 #       adds data to the excluded_data dataset.
 source(
-  here(
+  here::here(
     "scripts",
     "custom_functions",
-    "add_na_spatial_to_excluded_data.R"
+    "add_not_within_abs_map_to_excluded_data.R"
   ),
   echo = TRUE,
   max.deparse.length = 1e4
 )
+
+
+
+
+
+
+# Provide Valid Email -----------------------------------------------------
+
+# Ref [1]
+# Use an Atlas of Australia-registered email (Register at ala.org.au)
+galah_config(email = "johann.wagner@gmail.com")
+
+# References:
+# - [1] https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
