@@ -48,11 +48,21 @@ your raw_data folder
 [Tidies up your raw data, outputs tidied_data.csv]
 [Cleans up your tidied data, outputs cleaned_data.csv]
 
+• loads in your excluded_data.csv file
+• loads in your tidied_data.csv file
+• removes the appropriate data from tidied_data.csv based on excluded_data.csv
+• saves a new file called cleaned_data.csv
+
 # Sanity checks
 
 [R chunks and prose which perform sanity checks on your cleaned data]
 [Remember that this really just summarises that your data are OK after you've cleaned them]
 [Most of the real sanity checks and data cleaning go on in the data_cleaning.Rmd file]
+
+• Include enough sanity checks to convince yourself (and whoever will be grading your work) that your data are clean
+enough for your particular purposes
+• You will never find and remove all errors, but you must be reasonably sure that you have found any errors which might
+affect your conclusions
 
 # Addressing the questions/aims
 
