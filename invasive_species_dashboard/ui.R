@@ -48,7 +48,8 @@ fluidPage(
 
         # Show a plot of the generated distribution
         mainPanel(
-            plotOutput("spatial_visualisation")
+            plotOutput("spatial_visualisation"),
+            plotOutput("temporal_visualisation")
         )
     )
 )
