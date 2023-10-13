@@ -42,7 +42,7 @@ dashboard_data <- read_csv(
 # Data Visualisation - Spatial --------------------------------------------
 
 species_simple_name <- "Feral Pigs"
-state_name <- "New South Wales"
+state_name <- "Victoria"
 
 ## Create spatial data ---------------------------------------------------
 
@@ -56,7 +56,24 @@ spatial_data <- dashboard_data %>%
 
 
 
-## Create spatial plto ----------------------------------------------------
+# Create captial cities ---------------------------------------------------
+# Ref [4]: Plot onto map
+capital_cities_data <- tibble::tribble( 
+  ~state,                         ~city,       ~lat,     ~lon,
+  "New South Wales",              "Sydney",    -33.8688, 151.2093,  
+  "Victoria",                     "Melbourne", -37.8136, 144.9631, 
+  "Queensland",                   "Brisbane",  -27.4698, 153.0251, 
+  "South Australia",              "Adelaide",  -34.9285, 138.6007, 
+  "Western Australia",            "Perth",     -31.9505, 115.8605, 
+  "Tasmania",                     "Hobart",    -42.8821, 147.3272, 
+  "Northern Territory",           "Canberra",  -35.2809, 149.1300, 
+  "Australian Capital Territory", "Darwin",    -12.4634, 130.8456, 
+) %>% 
+  filter(state == state_name)
+
+
+
+## Create spatial plot ----------------------------------------------------
 # Ref [1]: Create spatial visualisation of the ACT
 state2021 %>% 
   
@@ -72,11 +89,23 @@ state2021 %>%
   geom_point(
     data = spatial_data,
     aes(
-      x      = decimalLongitude,
-      y      = decimalLatitude
+      x = decimalLongitude,
+      y = decimalLatitude,
+      size = simpleName
     ),
     alpha = 0.6,
-    colour = "#F79044FF"
+    colour = "#1b9e77"
+  ) +
+  
+  geom_point(
+    data = capital_cities_data,
+    aes(
+      x = lon,
+      y = lat,
+      shape = city
+    ),
+    colour = "#d95f02",
+    size = 4
   ) +
   
   coord_sf() +
@@ -98,7 +127,11 @@ state2021 %>%
       bold(.(species_simple_name)) ~
       "in" ~
       bold(.(state_name))
-    )
+    ),
+    
+    shape = "Capital City",
+    
+    size = "Invasive Species"
   ) +
   
   theme(
@@ -124,7 +157,7 @@ state2021 %>%
 # - [1] https://github.com/wfmackey/absmapsdata/tree/master
 # - [2] https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
 # - [3] https://stackoverflow.com/questions/72119434/ggplot-create-title-with-superscript-bold-and-with-pasted-variable
-
+# - [4] https://ggplot2-book.org/maps.html
 
 
 
