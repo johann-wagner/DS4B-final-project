@@ -46,6 +46,8 @@ state_name <- "New South Wales"
 
 # Ref [1]: Create spatial visualisation of the ACT
 state2021 %>% 
+  
+  # We only care about a specific state
   filter(state_name_2021 == state_name) %>% 
   ggplot() +
   
@@ -57,6 +59,8 @@ state2021 %>%
   geom_point(
     data = {
       dashboard_data %>% 
+        
+        # We only care about a specific species in a specific state
         filter(
           simpleName == species_simple_name,
           state      == state_name
@@ -92,19 +96,41 @@ state2021 %>%
 
 # Data Visualisation - Temporal -------------------------------------------
 
+species_simple_name <- "Feral Cats"
+state_name <- "New South Wales"
+
 ## Create temporal data ---------------------------------------------------
 temporal_data <- dashboard_data %>% 
+  
+  # Use full month name in ggplot title
+  mutate(
+    month_full_name = eventDate %>%
+      as_date() %>%
+      month(
+        label = TRUE,
+        abbr  = FALSE
+        ) %>%
+      as_factor()
+  ) %>%
+  
+  # We only care about a specific species in a specific state
   filter(
     simpleName == species_simple_name,
     state      == state_name
   ) %>% 
-  count(month) %>% 
+  count(month, month_full_name) %>% 
+  
+  # Ref [6]: Add 13th empty month to provide space for percentage scale
+  add_row(
+    month = "   ",
+    n     = 0
+    ) %>% 
   
   # Ensure months are ordered in visualisation
   arrange(match(
     month,
     c(
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "   ", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     )
   )) %>% 
@@ -114,33 +140,49 @@ temporal_data <- dashboard_data %>%
 
 
 
-## Create paramaters for labels -------------------------------------------
 
-# Ref [3]: Calculate the ANGLE of the labels
-number_of_bar <- nrow(temporal_data)
-angle <- 90 - 360 * (1:12 - 0.5) / number_of_bar
+## Check if zero records ---------------------------------------------------
 
-# Calculate the alignment of labels: right or left
-# If I am on the left part of the plot, my labels have currently an angle < -90
-temporal_data$hjust <- ifelse(angle < -90, 1, 0)
+# Ensure that no plot is shown if there are zero species records in state
+if(nrow(temporal_data) == 1) {
+  stop(glue(
+    "There are zero records of the ",
+    species_simple_name,
+    " in ",
+    state_name,
+    "."
+  ))
+}
 
-# Flip angle BY to make them readable
-temporal_data$angle <- ifelse(angle < -90, angle + 180, angle)
+
+
+# ## Create paramaters for labels -------------------------------------------
+# 
+# # Ref [3]: Calculate the ANGLE of the labels
+# number_of_bar <- nrow(temporal_data)
+# angle <- 90 - 360 * (1:13 - 0.5) / number_of_bar
+# 
+# # Calculate the alignment of labels: right or left
+# # If I am on the left part of the plot, my labels have currently an angle < -90
+# temporal_data$hjust <- ifelse(angle < -90, 1, 0)
+# 
+# # Flip angle BY to make them readable
+# temporal_data$angle <- ifelse(angle < -90, angle + 180, angle)
 
 
 
-# Create circular barplot -------------------------------------------------
+## Create circular barplot -------------------------------------------------
 # Ref [1, 2]
 temporal_data %>% 
   ggplot(aes(
-    x = fct_inorder(month),
-    y = proportion,
-    fill = fct_inorder(month)
+    x    = fct_inorder(month),
+    y    = proportion,
+    fill = proportion
     )) +
   
-  # Create background grid
+  # Create background percentage grid/axis
   geom_hline(
-    data = tibble(y = 1:10 * 0.1),
+    data = tibble(y = 0:10 * 0.1),
     aes(yintercept = y),
     colour = "lightgray"
   ) +
@@ -150,142 +192,175 @@ temporal_data %>%
     stat = "identity"
     ) +
   
-  # Create month label
-  geom_text(
-    aes(
-      x = fct_inorder(month),
-      y = proportion + 0.02, # Adjust the y-coordinate for label positioning
-      label = percent(proportion, accuracy = 1),
-      hjust = hjust
-    ),
-    fontface = "bold",
-    size = 4,
-    angle = temporal_data$angle,
-    inherit.aes = FALSE 
-    ) +
+  # # Create month label
+  # geom_text(
+  #   aes(
+  #     x = fct_inorder(month),
+  #     y = proportion + 0.02, # Adjust the y-coordinate for label positioning
+  #     label = percent(proportion, accuracy = 1),
+  #     hjust = hjust
+  #   ),
+  #   fontface = "bold",
+  #   size = 3,
+  #   angle = temporal_data$angle,
+  #   inherit.aes = FALSE 
+  #   ) +
 
   # Ref [4]: Annotate custom scale inside plot
   annotate(
-    x = 0.5,
-    y = 0.125,
-    size = 3,
+    x     = 1,
+    y     = 0.015,
+    size  = 3,
+    label = "0%",
+    geom  = "text",
+    color = "grey12",
+  ) +
+  
+  annotate(
+    x     = 1,
+    y     = 0.115,
+    size  = 3,
     label = "10%",
-    geom = "text",
+    geom  = "text",
     color = "grey12",
   ) +
   
   annotate(
-    x = 0.5,
-    y = 0.225,
-    size = 3,
+    x     = 1,
+    y     = 0.215,
+    size  = 3,
     label = "20%",
-    geom = "text",
+    geom  = "text",
     color = "grey12",
   ) +
   
   annotate(
-    x = 0.5,
-    y = 0.325,
-    size = 3,
+    x     = 1,
+    y     = 0.315,
+    size  = 3,
     label = "30%",
-    geom = "text",
+    geom  = "text",
     color = "grey12",
   ) +
   
   annotate(
-    x = 0.5,
-    y = 0.425,
-    size = 3,
+    x     = 1,
+    y     = 0.415,
+    size  = 3,
     label = "40%",
-    geom = "text",
+    geom  = "text",
     color = "grey12",
   ) +
   
   annotate(
-    x = 0.5,
-    y = 0.525,
-    size = 3,
+    x     = 1,
+    y     = 0.515,
+    size  = 3,
     label = "50%",
-    geom = "text",
+    geom  = "text",
     color = "grey12",
   ) +
   
   annotate(
-    x = 0.5,
-    y = 0.625,
-    size = 3,
+    x     = 1,
+    y     = 0.615,
+    size  = 3,
     label = "60%",
-    geom = "text",
+    geom  = "text",
     color = "grey12",
   ) +
   
   annotate(
-    x = 0.5,
-    y = 0.725,
-    size = 3,
+    x     = 1,
+    y     = 0.715,
+    size  = 3,
     label = "70%",
-    geom = "text",
+    geom  = "text",
     color = "grey12",
   ) +
   
   annotate(
-    x = 0.5,
-    y = 0.825,
-    size = 3,
+    x     = 1,
+    y     = 0.815,
+    size  = 3,
     label = "80%",
-    geom = "text",
+    geom  = "text",
     color = "grey12",
   ) +
   
   annotate(
-    x = 0.5,
-    y = 0.925,
-    size = 3,
+    x     = 1,
+    y     = 0.915,
+    size  = 3,
     label = "90%",
-    geom = "text",
+    geom  = "text",
     color = "grey12",
   ) +
   
   annotate(
-    x = 0.5,
-    y = 1.025,
-    size = 3,
+    x     = 1,
+    y     = 1.015,
+    size  = 3,
     label = "100%",
-    geom = "text",
+    geom  = "text",
     color = "grey12",
   ) +
   
-  scale_fill_viridis_d() +
+  scale_fill_viridis_c(option = "C") +
   
-  coord_polar(start = 0) +
+  # Ref [6]: Ensure 13th month is center aligned
+  coord_polar(start = -0.25) +
   
-  # Ref[4]: Scale y axis so bars don't start in the center
+  # Ref [4]: Scale y axis so bars don't start in the center
+  # 0.05 ensures that there will always be a +10% grid circle /
+  # There will always be an outer n*10% grid circle
   scale_y_continuous(
-    limits = c(-0.1, max(temporal_data$proportion) + 0.1),
+    limits = c(-0.1, max(temporal_data$proportion) + 0.07),
     expand = c(0, 0),
     breaks = 1:10 * 0.1
   ) + 
   
   labs(
-    title = (
-      "Monthly Circular Barplot of"
+  title = bquote(
+    # Extract character string of month with most records
+    # Ref [5]: The .() allows the object to be called
+    bold(.({
+      temporal_data %>%
+        filter(n == max(temporal_data$n)) %>%
+        pull(month_full_name) %>%
+        as.character()
+    })) ~
+    "has the most records of" ~
+    bold(.(species_simple_name)) ~
+    "in" ~
+    bold(.(state_name))
     )
-  )
+  ) +
   
   theme_minimal() +
   
   theme(
-    # Remove axis ticks and text
+    # Remove axis ticks, text, and grid lines
     axis.title = element_blank(),
     axis.ticks = element_blank(),
-    axis.text = element_blank(),
+    axis.text  = element_blank(),
+    panel.grid = element_blank(),
     
-    # Use gray text for the region names
+    # Use gray text for the percentages
     axis.text.x = element_text(color = "gray12", size = 12),
     
     # Fill is ordered by month and already has labels in plot
     # No need for legend
-    legend.position = "none"
+    legend.position = "none",
+    
+    # Add colour to ggplot title
+    plot.title = element_text(size = 16),
+    
+    # Add background to provide colour contrast
+    plot.background = element_rect(
+      fill   = "grey97",
+      colour = "white"
+      )
   )
   
 
@@ -296,3 +371,5 @@ temporal_data %>%
 # - [2] https://r-graph-gallery.com/295-basic-circular-barplot.html
 # - [3] https://r-graph-gallery.com/296-add-labels-to-circular-barplot.html
 # - [4] https://r-graph-gallery.com/web-circular-barplot-with-R-and-ggplot2.html
+# - [5] https://stackoverflow.com/questions/72119434/ggplot-create-title-with-superscript-bold-and-with-pasted-variable
+# - [6] https://r-graph-gallery.com/297-circular-barplot-with-groups.html
