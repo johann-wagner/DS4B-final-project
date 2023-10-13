@@ -20,6 +20,11 @@ source(
 
 library(shiny)
 
+# Read in dashboard_data
+dashboard_data <- read_csv(
+    "dashboard_data.csv"
+)
+
 
 
 # Ref [1]: Define UI for application that draws a histogram
