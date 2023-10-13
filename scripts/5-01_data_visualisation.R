@@ -41,9 +41,22 @@ dashboard_data <- read_csv(
 
 # Data Visualisation - Spatial --------------------------------------------
 
-species_simple_name <- "Feral Pig"
+species_simple_name <- "Feral Pigs"
 state_name <- "New South Wales"
 
+## Create spatial data ---------------------------------------------------
+
+spatial_data <- dashboard_data %>% 
+  
+  # We only care about a specific species in a specific state
+  filter(
+    simpleName == species_simple_name,
+    state      == state_name
+  )
+
+
+
+## Create spatial plto ----------------------------------------------------
 # Ref [1]: Create spatial visualisation of the ACT
 state2021 %>% 
   
@@ -57,20 +70,13 @@ state2021 %>%
   ) +
   
   geom_point(
-    data = {
-      dashboard_data %>% 
-        
-        # We only care about a specific species in a specific state
-        filter(
-          simpleName == species_simple_name,
-          state      == state_name
-          )
-      },
+    data = spatial_data,
     aes(
-      x = decimalLongitude,
-      y = decimalLatitude
+      x      = decimalLongitude,
+      y      = decimalLatitude
     ),
-    alpha = 0.6
+    alpha = 0.6,
+    colour = "#F79044FF"
   ) +
   
   coord_sf() +
@@ -78,17 +84,46 @@ state2021 %>%
   theme_minimal() +
   
   # Ref [2]
-  labs(title = glue(
-    species_simple_name,
-    " Observations in the ",
-    state_name
-    ))
+  labs(
+    title = bquote(
+      "There are" ~
+      # Extract character string of month with most records
+      # Ref [3]: The .() allows the object to be called
+      bold(.({
+        spatial_data %>% 
+          nrow() %>% 
+          comma()
+      })) ~
+      "records of" ~
+      bold(.(species_simple_name)) ~
+      "in" ~
+      bold(.(state_name))
+    )
+  ) +
+  
+  theme(
+    # Remove axis ticks, text, and grid lines
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text  = element_blank(),
+    panel.grid = element_blank(),
+    
+    # Add colour to ggplot title
+    plot.title = element_text(size = 16),
+    
+    # Add background to provide colour contrast
+    plot.background = element_rect(
+      fill   = "grey97",
+      colour = "white"
+    )
+  )
 
 
 
 # References:
 # - [1] https://github.com/wfmackey/absmapsdata/tree/master
 # - [2] https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
+# - [3] https://stackoverflow.com/questions/72119434/ggplot-create-title-with-superscript-bold-and-with-pasted-variable
 
 
 
