@@ -83,18 +83,18 @@ dashboard_data <- cleaned_data %>%
       scientificName %in% c(
         "Oryctolagus cuniculus",
         "Oryctolagus cuniculus cuniculus"
-        )                                        ~ "European Rabbit",
+        )                                        ~ "European Rabbits",
       scientificName %in% c(
         "Vulpes vulpes",
-        "Vulpes vulpes vulpes")                  ~ "European Red Fox",
-      scientificName == "Rhinella marina"        ~ "Cane Toad",
-      scientificName == "Felis catus"            ~ "Feral Cat",
-      scientificName == "Equus (Equus) caballus" ~ "Feral Horse",
+        "Vulpes vulpes vulpes")                  ~ "European Red Foxes",
+      scientificName == "Rhinella marina"        ~ "Cane Toads",
+      scientificName == "Felis catus"            ~ "Feral Cats",
+      scientificName == "Equus (Equus) caballus" ~ "Feral Horses",
       scientificName %in% c(
         "Sus scrofa",
         "Sus scrofa domesticus"
-        )                                        ~ "Feral Pig",
-      scientificName == "Solenopsis invicta"     ~ "Red Imported Fire Ant"
+        )                                        ~ "Feral Pigs",
+      scientificName == "Solenopsis invicta"     ~ "Red Imported Fire Ants"
       ),
     
     # Create month column
