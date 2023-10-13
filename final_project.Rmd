@@ -31,6 +31,8 @@ Figures: [The number of figures in your document. You can just count these]
 
 [A brief section which first states and then justifies the questions/aims of your EDA. Must provide evidence of independent research into what has been done before on these questions/aims. See above for examples.]
 
+START BROAD PREDATOR PREY
+
 # Raw data
 
 [Explains how and where to get the exact raw data you got]
@@ -66,7 +68,10 @@ affect your conclusions
 
 # Addressing the questions/aims
 
+FINISH BROAD
+
 [This is the *main* section of your work. For example, if you are doing an EDA, this is where you would summarise it. If you are building something like a package or shiny app, a description of that package / app and demonstration of its function(s) would go here. Use appropriate sub-headings.]
+
 
 # References
 
