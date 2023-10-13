@@ -60,6 +60,14 @@ library(ggpointdensity)
 ### https://scales.r-lib.org/
 library(scales)
 
+# To easily combine simple Markdown and HTML rendering for ggplot2
+### https://github.com/wilkelab/ggtext
+library(ggtext)
+
+# To easily repel overlapping text labels
+### https://ggrepel.slowkow.com/
+library(ggrepel)
+
 
 
 ### Spatial Visualisation ----------------------------------------------------

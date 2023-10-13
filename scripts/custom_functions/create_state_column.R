@@ -66,6 +66,22 @@ create_state_column <- function(species_all_states_clean_input) {
         dataResourceName,
         occurrenceStatus
       )
+    ) %>% 
+    
+    mutate(
+      state = state %>% 
+        factor(
+          levels = c(
+            "New South Wales",
+            "Victoria",
+            "Queensland",
+            "South Australia",
+            "Western Australia",
+            "Tasmania",
+            "Northern Territory",
+            "Australian Capital Territory"
+            )
+        )
     )
   
   return(species_all_states_clean_output)
