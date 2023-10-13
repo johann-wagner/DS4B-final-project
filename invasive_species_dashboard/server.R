@@ -197,7 +197,14 @@ function(input, output, session) {
             )) %>% 
             
             # Calculate Proportion
-            mutate(proportion = n / sum(n))
+            mutate(
+                # Ensure that all months are always displayed
+                # even if there is a month with zero records
+                proportion = case_when(
+                    n > 0 ~ n / sum(n),
+                    .default = 0
+                )
+            )
         
         
         
