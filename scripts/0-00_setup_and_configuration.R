@@ -64,6 +64,10 @@ library(scales)
 ### https://github.com/wilkelab/ggtext
 library(ggtext)
 
+# To easily repel overlapping text labels
+### https://ggrepel.slowkow.com/
+library(ggrepel)
+
 
 
 ### Spatial Visualisation ----------------------------------------------------
