@@ -60,14 +60,14 @@ spatial_data <- dashboard_data %>%
 # Ref [4]: Plot onto map
 capital_cities_data <- tibble::tribble( 
   ~state,                         ~city,       ~lat,     ~lon,
-  "New South Wales",              "Sydney",    -33.8688, 151.2093,  
-  "Victoria",                     "Melbourne", -37.8136, 144.9631, 
-  "Queensland",                   "Brisbane",  -27.4698, 153.0251, 
-  "South Australia",              "Adelaide",  -34.9285, 138.6007, 
-  "Western Australia",            "Perth",     -31.9505, 115.8605, 
-  "Tasmania",                     "Hobart",    -42.8821, 147.3272, 
-  "Northern Territory",           "Canberra",  -35.2809, 149.1300, 
-  "Australian Capital Territory", "Darwin",    -12.4634, 130.8456, 
+  "New South Wales",              "Sydney",    -33.8688, 151.2093,
+  "Victoria",                     "Melbourne", -37.8136, 144.9631,
+  "Queensland",                   "Brisbane",  -27.4698, 153.0251,
+  "South Australia",              "Adelaide",  -34.9285, 138.6007,
+  "Western Australia",            "Perth",     -31.9505, 115.8605,
+  "Tasmania",                     "Hobart",    -42.8821, 147.3272,
+  "Northern Territory",           "Darwin",    -12.4634, 130.8456,
+  "Australian Capital Territory", "Canberra",  -35.2809, 149.1300,
 ) %>% 
   filter(state == state_name)
 
@@ -398,7 +398,7 @@ temporal_data %>%
         pull(month_full_name) %>%
         as.character()
     })) ~
-    "has the most records of" ~
+    "has the highest proportion of records" ~
     bold(.(species_simple_name)) ~
     "in" ~
     bold(.(state_name))
