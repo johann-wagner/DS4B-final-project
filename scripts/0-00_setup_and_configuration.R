@@ -56,6 +56,10 @@ library(ggthemes)
 ### https://github.com/LKremer/ggpointdensity
 library(ggpointdensity)
 
+# To scale and convert data values to perceptual properties
+### https://scales.r-lib.org/
+library(scales)
+
 
 
 ### Spatial Visualisation ----------------------------------------------------
