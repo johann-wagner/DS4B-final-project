@@ -36,29 +36,68 @@ function(input, output, session) {
         species_simple_name <- input$simpleName
         state_name <- input$state
         
-        # Ref [1]: Create spatial visualisation
+        ## Create spatial data ---------------------------------------------------
+        
+        spatial_data <- dashboard_data %>% 
+            
+            # We only care about a specific species in a specific state
+            filter(
+                simpleName == species_simple_name,
+                state      == state_name
+            )
+        
+        
+        
+        # Create captial cities ---------------------------------------------------
+        # Ref [4]: Plot onto map
+        capital_cities_data <- tibble::tribble( 
+            ~state,                         ~city,       ~lat,     ~lon,
+            "New South Wales",              "Sydney",    -33.8688, 151.2093,  
+            "Victoria",                     "Melbourne", -37.8136, 144.9631, 
+            "Queensland",                   "Brisbane",  -27.4698, 153.0251, 
+            "South Australia",              "Adelaide",  -34.9285, 138.6007, 
+            "Western Australia",            "Perth",     -31.9505, 115.8605, 
+            "Tasmania",                     "Hobart",    -42.8821, 147.3272, 
+            "Northern Territory",           "Canberra",  -35.2809, 149.1300, 
+            "Australian Capital Territory", "Darwin",    -12.4634, 130.8456, 
+        ) %>% 
+            filter(state == state_name)
+        
+        
+        
+        ## Create spatial plot ----------------------------------------------------
+        # Ref [1]: Create spatial visualisation of the ACT
         state2021 %>% 
+            
+            # We only care about a specific state
             filter(state_name_2021 == state_name) %>% 
             ggplot() +
             
-            # Ref [1]: Create background polygon
+            # Ref [1]: Create background polygon of the ACT
             geom_sf(
                 aes(geometry = geometry)
             ) +
             
             geom_point(
-                data = {
-                    dashboard_data %>% 
-                        filter(
-                            simpleName == species_simple_name,
-                            state      == state_name
-                        )
-                },
+                data = spatial_data,
                 aes(
                     x = decimalLongitude,
-                    y = decimalLatitude
+                    y = decimalLatitude,
+                    size = simpleName
                 ),
-                alpha = 0.6
+                alpha = 0.6,
+                colour = "#1b9e77"
+            ) +
+            
+            geom_point(
+                data = capital_cities_data,
+                aes(
+                    x = lon,
+                    y = lat,
+                    shape = city
+                ),
+                colour = "#d95f02",
+                size = 4
             ) +
             
             coord_sf() +
@@ -66,11 +105,51 @@ function(input, output, session) {
             theme_minimal() +
             
             # Ref [2]
-            labs(title = glue(
-                species_simple_name,
-                " Observations in the ",
-                state_name
-            ))
+            labs(
+                title = bquote(
+                    "There are" ~
+                        # Extract character string of month with most records
+                        # Ref [3]: The .() allows the object to be called
+                        bold(.({
+                            spatial_data %>% 
+                                nrow() %>% 
+                                comma()
+                        })) ~
+                        "records of" ~
+                        bold(.(species_simple_name)) ~
+                        "in" ~
+                        bold(.(state_name))
+                ),
+                
+                shape = "Capital City",
+                
+                size = "Invasive Species"
+            ) +
+            
+            theme(
+                # Remove axis ticks, text, and grid lines
+                axis.title = element_blank(),
+                axis.ticks = element_blank(),
+                axis.text  = element_blank(),
+                panel.grid = element_blank(),
+                
+                # Add colour to ggplot title
+                plot.title = element_text(size = 16),
+                
+                # Add background to provide colour contrast
+                plot.background = element_rect(
+                    fill   = "grey97",
+                    colour = "white"
+                )
+            )
+        
+        
+        
+        # References:
+        # - [1] https://github.com/wfmackey/absmapsdata/tree/master
+        # - [2] https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
+        # - [3] https://stackoverflow.com/questions/72119434/ggplot-create-title-with-superscript-bold-and-with-pasted-variable
+        # - [4] https://ggplot2-book.org/maps.html
         
     })
     
