@@ -164,8 +164,8 @@ state2021 %>%
 
 # Data Visualisation - Temporal -------------------------------------------
 
-species_simple_name <- "Feral Cats"
-state_name <- "New South Wales"
+species_simple_name <- "Feral Horses"
+state_name <- "Australian Capital Territory"
 
 ## Create temporal data ---------------------------------------------------
 temporal_data <- dashboard_data %>% 
@@ -186,7 +186,24 @@ temporal_data <- dashboard_data %>%
     simpleName == species_simple_name,
     state      == state_name
   ) %>% 
-  count(month, month_full_name) %>% 
+  count(month = month_full_name) %>%
+  
+  # Ref [7]:
+  # Ensure that all months are always displayed
+  # even if there is a month with zero records
+  complete(month = unique(dashboard_data$eventDate %>% 
+                            as_date() %>% 
+                            month(label = TRUE, abbr = FALSE) %>% 
+                            as_factor()), 
+           fill = list(n = 0)) %>% 
+  mutate(
+    month_full_name = month,
+    month = month_full_name %>% 
+      str_sub(
+        start = 1,
+        end   = 3
+      )
+  ) %>% 
   
   # Ref [6]: Add 13th empty month to provide space for percentage scale
   add_row(
@@ -448,3 +465,4 @@ temporal_data %>%
 # - [4] https://r-graph-gallery.com/web-circular-barplot-with-R-and-ggplot2.html
 # - [5] https://stackoverflow.com/questions/72119434/ggplot-create-title-with-superscript-bold-and-with-pasted-variable
 # - [6] https://r-graph-gallery.com/297-circular-barplot-with-groups.html
+# - [7] https://chat.openai.com/share/c907f001-88f6-49ee-afcd-696825e5daf7

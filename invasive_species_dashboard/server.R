@@ -179,7 +179,24 @@ function(input, output, session) {
                 simpleName == species_simple_name,
                 state      == state_name
             ) %>% 
-            count(month, month_full_name) %>% 
+            count(month = month_full_name) %>%
+            
+            # Ref [7]:
+            # Ensure that all months are always displayed
+            # even if there is a month with zero records
+            complete(month = unique(dashboard_data$eventDate %>% 
+                                        as_date() %>% 
+                                        month(label = TRUE, abbr = FALSE) %>% 
+                                        as_factor()), 
+                     fill = list(n = 0)) %>% 
+            mutate(
+                month_full_name = month,
+                month = month_full_name %>% 
+                    str_sub(
+                        start = 1,
+                        end   = 3
+                    )
+            ) %>% 
             
             # Ref [6]: Add 13th empty month to provide space for percentage scale
             add_row(
@@ -388,40 +405,22 @@ function(input, output, session) {
                 breaks = 1:10 * 0.1
             ) + 
             
-            # labs(
-            # title = HTML(glue(
-            #   "<span style='color:#440154FF; font-weight:bold;'>",
-            #   # Extract character string of month with most records
-            #   {
-            #     temporal_data %>%
-            #       filter(n == max(temporal_data$n)) %>%
-            #       pull(month_full_name) %>%
-            #       as.character()
-            #   },
-        #   "</span>",
-        #   " has the most records of ",
-        #   species_simple_name,
-        #   " in ",
-        #   state_name
-        #   ))
-        # ) +
-        
-        labs(
-            title = bquote(
-                # Extract character string of month with most records
-                # Ref [5]: The .() allows the object to be called
-                bold(.({
-                    temporal_data %>%
-                        filter(n == max(temporal_data$n)) %>%
-                        pull(month_full_name) %>%
-                        as.character()
-                })) ~
-                    "has the highest proportion of records" ~
-                    bold(.(species_simple_name)) ~
-                    "in" ~
-                    bold(.(state_name))
-            )
-        ) +
+            labs(
+                title = bquote(
+                    # Extract character string of month with most records
+                    # Ref [5]: The .() allows the object to be called
+                    bold(.({
+                        temporal_data %>%
+                            filter(n == max(temporal_data$n)) %>%
+                            pull(month_full_name) %>%
+                            as.character()
+                    })) ~
+                        "has the highest proportion of records" ~
+                        bold(.(species_simple_name)) ~
+                        "in" ~
+                        bold(.(state_name))
+                )
+            ) +
             
             theme_minimal() +
             
@@ -452,7 +451,6 @@ function(input, output, session) {
         
         
         
-        
         # References:
         # - [1] https://www.geeksforgeeks.org/circular-barplots-and-customisation-in-r/
         # - [2] https://r-graph-gallery.com/295-basic-circular-barplot.html
@@ -460,5 +458,6 @@ function(input, output, session) {
         # - [4] https://r-graph-gallery.com/web-circular-barplot-with-R-and-ggplot2.html
         # - [5] https://stackoverflow.com/questions/72119434/ggplot-create-title-with-superscript-bold-and-with-pasted-variable
         # - [6] https://r-graph-gallery.com/297-circular-barplot-with-groups.html
+        # - [7] https://chat.openai.com/share/c907f001-88f6-49ee-afcd-696825e5daf7
     })
 }
