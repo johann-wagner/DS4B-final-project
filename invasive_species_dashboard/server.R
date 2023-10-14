@@ -10,15 +10,10 @@
 # Setup and Configuration -------------------------------------------------
 
 source(
-    here::here(
-        "scripts",
-        "0-00_setup_and_configuration.R"
-    ),
+    "0-00_setup_and_configuration.R",
     echo = TRUE,
     max.deparse.length = 1e4
 )
-
-library(shiny)
 
 # Read in dashboard_data
 dashboard_data <- read_csv(
@@ -26,6 +21,9 @@ dashboard_data <- read_csv(
 )
 
 
+
+
+# RShiny Server -----------------------------------------------------------
 
 # Ref [3]: Define server logic required to draw a histogram
 function(input, output, session) {
@@ -222,7 +220,6 @@ function(input, output, session) {
                     .default = 0
                 )
             )
-        
         
         
         
@@ -450,7 +447,6 @@ function(input, output, session) {
         
         
         
-        
         # References:
         # - [1] https://www.geeksforgeeks.org/circular-barplots-and-customisation-in-r/
         # - [2] https://r-graph-gallery.com/295-basic-circular-barplot.html
@@ -459,5 +455,89 @@ function(input, output, session) {
         # - [5] https://stackoverflow.com/questions/72119434/ggplot-create-title-with-superscript-bold-and-with-pasted-variable
         # - [6] https://r-graph-gallery.com/297-circular-barplot-with-groups.html
         # - [7] https://chat.openai.com/share/c907f001-88f6-49ee-afcd-696825e5daf7
+    })
+    
+    output$dashboard_data_output <- renderDataTable({
+        if(input$show_data) {
+            
+            # Dynamic Variables
+            species_simple_name <- input$simpleName
+            state_name <- input$state
+            
+            ## Create temporal data ---------------------------------------------------
+            temporal_data <- dashboard_data %>% 
+                
+                # Use full month name in ggplot title
+                mutate(
+                    month_full_name = eventDate %>%
+                        as_date() %>%
+                        month(
+                            label = TRUE,
+                            abbr  = FALSE
+                        ) %>%
+                        as_factor()
+                ) %>%
+                
+                # We only care about a specific species in a specific state
+                filter(
+                    simpleName == species_simple_name,
+                    state      == state_name
+                ) %>% 
+                count(month = month_full_name) %>%
+                
+                # Ref [7]:
+                # Ensure that all months are always displayed
+                # even if there is a month with zero records
+                complete(month = unique(dashboard_data$eventDate %>% 
+                                            as_date() %>% 
+                                            month(label = TRUE, abbr = FALSE) %>% 
+                                            as_factor()), 
+                         fill = list(n = 0)) %>% 
+                mutate(
+                    month_full_name = month,
+                    month = month_full_name %>% 
+                        str_sub(
+                            start = 1,
+                            end   = 3
+                        )
+                ) %>% 
+                
+                # Ref [6]: Add 13th empty month to provide space for percentage scale
+                add_row(
+                    month = "   ",
+                    n     = 0
+                ) %>% 
+                
+                # Ensure months are ordered in visualisation
+                arrange(match(
+                    month,
+                    c(
+                        "   ", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                    )
+                )) %>% 
+                
+                # Calculate Proportion
+                mutate(
+                    # Ensure that all months are always displayed
+                    # even if there is a month with zero records
+                    proportion = case_when(
+                        n > 0 ~ n / sum(n),
+                        .default = 0
+                    ) %>% 
+                        percent()
+                ) %>% 
+                
+                select(month, month_full_name, n, proportion) %>% 
+                
+                filter(month != "   ")
+            
+            datatable(
+                data = temporal_data,
+                options = list(pageLength = 10),
+                rownames = FALSE
+            )
+            
+        }
     })
 }
