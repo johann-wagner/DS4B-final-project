@@ -22,12 +22,14 @@ dashboard_data <- read_csv(
 
 
 
-
 # RShiny Server -----------------------------------------------------------
 
 # Ref [3]: Define server logic required to draw a histogram
 function(input, output, session) {
 
+    # Single zoomable plot (on left)
+    ranges <- reactiveValues(x = NULL, y = NULL)
+    
     output$spatial_visualisation <- renderPlot({
         
         # Dynamic Variables
@@ -98,7 +100,11 @@ function(input, output, session) {
                 size = 4
             ) +
             
-            coord_sf() +
+            coord_sf(
+                xlim = ranges$x,
+                ylim = ranges$y,
+                expand = FALSE
+            ) +
             
             theme_minimal() +
             
@@ -149,6 +155,20 @@ function(input, output, session) {
         # - [3] https://stackoverflow.com/questions/72119434/ggplot-create-title-with-superscript-bold-and-with-pasted-variable
         # - [4] https://ggplot2-book.org/maps.html
         
+    })
+    
+    # Ref [1]: When a double-click happens, check if there's a brush on the plot.
+    # If so, zoom to the brush bounds; if not, reset the zoom.
+    observeEvent(input$plot1_dblclick, {
+        brush <- input$plot1_brush
+        if (!is.null(brush)) {
+            ranges$x <- c(brush$xmin, brush$xmax)
+            ranges$y <- c(brush$ymin, brush$ymax)
+            
+        } else {
+            ranges$x <- NULL
+            ranges$y <- NULL
+        }
     })
     
     output$temporal_visualisation <- renderPlot({
@@ -457,7 +477,10 @@ function(input, output, session) {
         # - [7] https://chat.openai.com/share/c907f001-88f6-49ee-afcd-696825e5daf7
     })
     
-    output$dashboard_data_output <- renderDataTable({
+    # References:
+    # - [1] https://shiny.posit.co/r/gallery/interactive-plots/plot-interaction-zoom/
+    
+    output$dashboard_data_output <- renderTable({
         if(input$show_data) {
             
             # Dynamic Variables
@@ -465,7 +488,7 @@ function(input, output, session) {
             state_name <- input$state
             
             ## Create temporal data ---------------------------------------------------
-            temporal_data <- dashboard_data %>% 
+            dashboard_data %>% 
                 
                 # Use full month name in ggplot title
                 mutate(
@@ -485,7 +508,6 @@ function(input, output, session) {
                 ) %>% 
                 count(month = month_full_name) %>%
                 
-                # Ref [7]:
                 # Ensure that all months are always displayed
                 # even if there is a month with zero records
                 complete(month = unique(dashboard_data$eventDate %>% 
@@ -502,7 +524,7 @@ function(input, output, session) {
                         )
                 ) %>% 
                 
-                # Ref [6]: Add 13th empty month to provide space for percentage scale
+                # Add 13th empty month to provide space for percentage scale
                 add_row(
                     month = "   ",
                     n     = 0
@@ -532,12 +554,50 @@ function(input, output, session) {
                 
                 filter(month != "   ")
             
-            datatable(
-                data = temporal_data,
-                options = list(pageLength = 10),
-                rownames = FALSE
-            )
-            
         }
+    },
+    # Ref [1]
+    striped = TRUE,
+    spacing = "l",
+    align = "lccr",
+    digits = 0,
+    width = "90%",
+    caption = "CAPTION!"
+    )
+    
+    # References:
+    # - [1] https://shiny.posit.co/r/getstarted/build-an-app/reactive-flow/render-functions.html
+    
+
+# Download Data -----------------------------------------------------------
+
+    # Ref [1]: Create a reactive expression to filter dashboard_data
+    download_filtered_data <- reactive({
+        # Dynamic Variables
+        species_simple_name <- input$simpleName
+        state_name <- input$state
+        
+        filtered <- dashboard_data %>% 
+            filter(
+                simpleName == species_simple_name,
+                state      == state_name
+            )
+        return(filtered)
     })
-}
+    
+    output$download_filtered_data <- downloadHandler(
+        filename = function() {
+            "filtered_dashboard_data.csv"
+        },
+        content = function(file) {
+            write.csv(
+                download_filtered_data(),
+                file,
+                row.names = FALSE
+                )
+        }
+    )
+    
+    # References:
+    # - [1] https://chat.openai.com/share/4d26e796-62b4-4c35-8787-e7e0d26b62e5
+    }
