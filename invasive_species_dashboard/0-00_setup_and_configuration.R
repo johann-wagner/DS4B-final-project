@@ -105,6 +105,10 @@ library(rsconnect)
 ### https://rstudio.github.io/DT/
 library(DT)
 
+# To easily apply themes to RShiny Apps
+### https://github.com/rstudio/shinythemes
+library(shinythemes)
+
 
 
 ### Misc ---------------------------------------------------------------------
