@@ -10,15 +10,10 @@
 # Setup and Configuration -------------------------------------------------
 
 source(
-    here::here(
-        "scripts",
-        "0-00_setup_and_configuration.R"
-    ),
+    "0-00_setup_and_configuration.R",
     echo = TRUE,
     max.deparse.length = 1e4
 )
-
-library(shiny)
 
 # Read in dashboard_data
 dashboard_data <- read_csv(
@@ -27,9 +22,14 @@ dashboard_data <- read_csv(
 
 
 
+# RShiny Server -----------------------------------------------------------
+
 # Ref [3]: Define server logic required to draw a histogram
 function(input, output, session) {
 
+    # Single zoomable plot (on left)
+    ranges <- reactiveValues(x = NULL, y = NULL)
+    
     output$spatial_visualisation <- renderPlot({
         
         # Dynamic Variables
@@ -100,7 +100,11 @@ function(input, output, session) {
                 size = 4
             ) +
             
-            coord_sf() +
+            coord_sf(
+                xlim = ranges$x,
+                ylim = ranges$y,
+                expand = FALSE
+            ) +
             
             theme_minimal() +
             
@@ -151,6 +155,20 @@ function(input, output, session) {
         # - [3] https://stackoverflow.com/questions/72119434/ggplot-create-title-with-superscript-bold-and-with-pasted-variable
         # - [4] https://ggplot2-book.org/maps.html
         
+    })
+    
+    # Ref [1]: When a double-click happens, check if there's a brush on the plot.
+    # If so, zoom to the brush bounds; if not, reset the zoom.
+    observeEvent(input$plot1_dblclick, {
+        brush <- input$plot1_brush
+        if (!is.null(brush)) {
+            ranges$x <- c(brush$xmin, brush$xmax)
+            ranges$y <- c(brush$ymin, brush$ymax)
+            
+        } else {
+            ranges$x <- NULL
+            ranges$y <- NULL
+        }
     })
     
     output$temporal_visualisation <- renderPlot({
@@ -222,7 +240,6 @@ function(input, output, session) {
                     .default = 0
                 )
             )
-        
         
         
         
@@ -450,7 +467,6 @@ function(input, output, session) {
         
         
         
-        
         # References:
         # - [1] https://www.geeksforgeeks.org/circular-barplots-and-customisation-in-r/
         # - [2] https://r-graph-gallery.com/295-basic-circular-barplot.html
@@ -460,4 +476,128 @@ function(input, output, session) {
         # - [6] https://r-graph-gallery.com/297-circular-barplot-with-groups.html
         # - [7] https://chat.openai.com/share/c907f001-88f6-49ee-afcd-696825e5daf7
     })
-}
+    
+    # References:
+    # - [1] https://shiny.posit.co/r/gallery/interactive-plots/plot-interaction-zoom/
+    
+    output$dashboard_data_output <- renderTable({
+        if(input$show_data) {
+            
+            # Dynamic Variables
+            species_simple_name <- input$simpleName
+            state_name <- input$state
+            
+            ## Create temporal data ---------------------------------------------------
+            dashboard_data %>% 
+                
+                # Use full month name in ggplot title
+                mutate(
+                    month_full_name = eventDate %>%
+                        as_date() %>%
+                        month(
+                            label = TRUE,
+                            abbr  = FALSE
+                        ) %>%
+                        as_factor()
+                ) %>%
+                
+                # We only care about a specific species in a specific state
+                filter(
+                    simpleName == species_simple_name,
+                    state      == state_name
+                ) %>% 
+                count(month = month_full_name) %>%
+                
+                # Ensure that all months are always displayed
+                # even if there is a month with zero records
+                complete(month = unique(dashboard_data$eventDate %>% 
+                                            as_date() %>% 
+                                            month(label = TRUE, abbr = FALSE) %>% 
+                                            as_factor()), 
+                         fill = list(n = 0)) %>% 
+                mutate(
+                    month_full_name = month,
+                    month = month_full_name %>% 
+                        str_sub(
+                            start = 1,
+                            end   = 3
+                        )
+                ) %>% 
+                
+                # Add 13th empty month to provide space for percentage scale
+                add_row(
+                    month = "   ",
+                    n     = 0
+                ) %>% 
+                
+                # Ensure months are ordered in visualisation
+                arrange(match(
+                    month,
+                    c(
+                        "   ", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                    )
+                )) %>% 
+                
+                # Calculate Proportion
+                mutate(
+                    # Ensure that all months are always displayed
+                    # even if there is a month with zero records
+                    proportion = case_when(
+                        n > 0 ~ n / sum(n),
+                        .default = 0
+                    ) %>% 
+                        percent()
+                ) %>% 
+                
+                select(month, month_full_name, n, proportion) %>% 
+                
+                filter(month != "   ")
+            
+        }
+    },
+    # Ref [1]
+    striped = TRUE,
+    spacing = "l",
+    align = "lccr",
+    digits = 0,
+    width = "90%",
+    caption = "CAPTION!"
+    )
+    
+    # References:
+    # - [1] https://shiny.posit.co/r/getstarted/build-an-app/reactive-flow/render-functions.html
+    
+
+# Download Data -----------------------------------------------------------
+
+    # Ref [1]: Create a reactive expression to filter dashboard_data
+    download_filtered_data <- reactive({
+        # Dynamic Variables
+        species_simple_name <- input$simpleName
+        state_name <- input$state
+        
+        filtered <- dashboard_data %>% 
+            filter(
+                simpleName == species_simple_name,
+                state      == state_name
+            )
+        return(filtered)
+    })
+    
+    output$download_filtered_data <- downloadHandler(
+        filename = function() {
+            "filtered_dashboard_data.csv"
+        },
+        content = function(file) {
+            write.csv(
+                download_filtered_data(),
+                file,
+                row.names = FALSE
+                )
+        }
+    )
+    
+    # References:
+    # - [1] https://chat.openai.com/share/4d26e796-62b4-4c35-8787-e7e0d26b62e5
+    }
