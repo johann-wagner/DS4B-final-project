@@ -91,6 +91,14 @@ library(ggspatial)
 
 
 
+### RShiny ------------------------------------------------------------------
+
+# To easily publish your Shiny apps
+### https://rstudio.github.io/rsconnect/
+library(rsconnect)
+
+
+
 ### Misc ---------------------------------------------------------------------
 # To easily standardise naming conventions based upon a consistent design
 # philosophy
