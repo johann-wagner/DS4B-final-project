@@ -27,6 +27,8 @@ dashboard_data <- read_csv(
 # Ref [3]: Define server logic required to draw a histogram
 function(input, output, session) {
 
+    thematic_shiny(font = "auto")
+    
     # Single zoomable plot (on left)
     ranges <- reactiveValues(x = NULL, y = NULL)
     
@@ -75,7 +77,8 @@ function(input, output, session) {
             
             # Ref [1]: Create background polygon of the ACT
             geom_sf(
-                aes(geometry = geometry)
+                aes(geometry = geometry),
+                fill = "#E5E4E2"
             ) +
             
             geom_point(
@@ -106,24 +109,24 @@ function(input, output, session) {
                 expand = FALSE
             ) +
             
-            theme_minimal() +
+            # theme_minimal() +
             
             # Ref [2]
             labs(
-                title = bquote(
-                    "There are" ~
-                        # Extract character string of month with most records
-                        # Ref [3]: The .() allows the object to be called
-                        bold(.({
-                            spatial_data %>% 
-                                nrow() %>% 
-                                comma()
-                        })) ~
-                        "records of" ~
-                        bold(.(species_simple_name)) ~
-                        "in" ~
-                        bold(.(state_name))
-                ),
+                # title = bquote(
+                #     "There are" ~
+                #         # Extract character string of month with most records
+                #         # Ref [3]: The .() allows the object to be called
+                #         bold(.({
+                #             spatial_data %>% 
+                #                 nrow() %>% 
+                #                 comma()
+                #         })) ~
+                #         "records of" ~
+                #         bold(.(species_simple_name)) ~
+                #         "in" ~
+                #         bold(.(state_name))
+                # ),
                 
                 shape = "Capital City",
                 
@@ -141,10 +144,30 @@ function(input, output, session) {
                 plot.title = element_text(size = 16),
                 
                 # Add background to provide colour contrast
-                plot.background = element_rect(
-                    fill   = "grey97",
-                    colour = "white"
-                )
+                # plot.background = element_rect(
+                #     fill   = "grey97",
+                #     colour = "white"
+                # ),
+                
+                # Ref [5]: Improve readability
+                legend.text      = element_text(size = 14),
+                legend.title     = element_text(
+                    size = 14,
+                    face = "bold"
+                    ),
+                legend.direction = "vertical",
+                legend.background = element_rect(
+                    fill = "#E5E4E2",
+                    colour = "#708090"
+                ),
+                
+                legend.position = "bottom",
+                legend.justification = c("right", "top"),
+                legend.box.just = "right",
+                legend.margin = margin(6, 6, 6, 6),
+                
+                # Ref [6]: Panel Background
+                panel.background = element_rect(fill = "transparent")
             )
         
         
@@ -154,7 +177,8 @@ function(input, output, session) {
         # - [2] https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
         # - [3] https://stackoverflow.com/questions/72119434/ggplot-create-title-with-superscript-bold-and-with-pasted-variable
         # - [4] https://ggplot2-book.org/maps.html
-        
+        # - [5] https://r-graph-gallery.com/239-custom-layout-legend-ggplot2.html
+        # - [6] https://www.r-bloggers.com/2022/07/ggplot2-transparent-background-quick-guide/
     })
     
     # Ref [1]: When a double-click happens, check if there's a brush on the plot.
@@ -304,24 +328,24 @@ function(input, output, session) {
             #   ),
             #   fontface = "bold",
             #   size = 3,
-        #   angle = temporal_data$angle,
-        #   inherit.aes = FALSE 
-        #   ) +
+            #   angle = temporal_data$angle,
+            #   inherit.aes = FALSE 
+            #   ) +
         
-        # Ref [4]: Annotate custom scale inside plot
-        annotate(
-            x     = 1,
-            y     = 0.015,
-            size  = 3,
-            label = "0%",
-            geom  = "text",
-            color = "grey12",
-        ) +
+            # Ref [4]: Annotate custom scale inside plot
+            annotate(
+                x     = 1,
+                y     = 0.015,
+                size  = 4,
+                label = "0%",
+                geom  = "text",
+                color = "grey12",
+            ) +
             
             annotate(
                 x     = 1,
                 y     = 0.115,
-                size  = 3,
+                size  = 4,
                 label = "10%",
                 geom  = "text",
                 color = "grey12",
@@ -330,7 +354,7 @@ function(input, output, session) {
             annotate(
                 x     = 1,
                 y     = 0.215,
-                size  = 3,
+                size  = 4,
                 label = "20%",
                 geom  = "text",
                 color = "grey12",
@@ -339,7 +363,7 @@ function(input, output, session) {
             annotate(
                 x     = 1,
                 y     = 0.315,
-                size  = 3,
+                size  = 4,
                 label = "30%",
                 geom  = "text",
                 color = "grey12",
@@ -348,7 +372,7 @@ function(input, output, session) {
             annotate(
                 x     = 1,
                 y     = 0.415,
-                size  = 3,
+                size  = 4,
                 label = "40%",
                 geom  = "text",
                 color = "grey12",
@@ -357,7 +381,7 @@ function(input, output, session) {
             annotate(
                 x     = 1,
                 y     = 0.515,
-                size  = 3,
+                size  = 4,
                 label = "50%",
                 geom  = "text",
                 color = "grey12",
@@ -366,7 +390,7 @@ function(input, output, session) {
             annotate(
                 x     = 1,
                 y     = 0.615,
-                size  = 3,
+                size  = 4,
                 label = "60%",
                 geom  = "text",
                 color = "grey12",
@@ -375,7 +399,7 @@ function(input, output, session) {
             annotate(
                 x     = 1,
                 y     = 0.715,
-                size  = 3,
+                size  = 4,
                 label = "70%",
                 geom  = "text",
                 color = "grey12",
@@ -384,7 +408,7 @@ function(input, output, session) {
             annotate(
                 x     = 1,
                 y     = 0.815,
-                size  = 3,
+                size  = 4,
                 label = "80%",
                 geom  = "text",
                 color = "grey12",
@@ -393,7 +417,7 @@ function(input, output, session) {
             annotate(
                 x     = 1,
                 y     = 0.915,
-                size  = 3,
+                size  = 4,
                 label = "90%",
                 geom  = "text",
                 color = "grey12",
@@ -402,7 +426,7 @@ function(input, output, session) {
             annotate(
                 x     = 1,
                 y     = 1.015,
-                size  = 3,
+                size  = 4,
                 label = "100%",
                 geom  = "text",
                 color = "grey12",
@@ -423,23 +447,23 @@ function(input, output, session) {
             ) + 
             
             labs(
-                title = bquote(
-                    # Extract character string of month with most records
-                    # Ref [5]: The .() allows the object to be called
-                    bold(.({
-                        temporal_data %>%
-                            filter(n == max(temporal_data$n)) %>%
-                            pull(month_full_name) %>%
-                            as.character()
-                    })) ~
-                        "has the highest proportion of records" ~
-                        bold(.(species_simple_name)) ~
-                        "in" ~
-                        bold(.(state_name))
-                )
+                # title = bquote(
+                #     # Extract character string of month with most records
+                #     # Ref [5]: The .() allows the object to be called
+                #     bold(.({
+                #         temporal_data %>%
+                #             filter(n == max(temporal_data$n)) %>%
+                #             pull(month_full_name) %>%
+                #             as.character()
+                #     })) ~
+                #         "has the highest proportion of records" ~
+                #         bold(.(species_simple_name)) ~
+                #         "in" ~
+                #         bold(.(state_name))
+                # )
             ) +
             
-            theme_minimal() +
+            # theme_minimal() +
             
             theme(
                 # Remove axis ticks, text, and grid lines
@@ -449,7 +473,11 @@ function(input, output, session) {
                 panel.grid = element_blank(),
                 
                 # Use gray text for the percentages
-                axis.text.x = element_text(color = "gray12", size = 12),
+                axis.text.x = element_text(
+                    color = "gray12",
+                    size = 14,
+                    face = "bold"
+                    ),
                 
                 # Fill is ordered by month and already has labels in plot
                 # No need for legend
@@ -458,11 +486,13 @@ function(input, output, session) {
                 # Add colour to ggplot title
                 plot.title = element_text(size = 16),
                 
+                panel.background = element_rect(fill = "transparent"),
+                
                 # Add background to provide colour contrast
-                plot.background = element_rect(
-                    fill   = "grey97",
-                    colour = "white"
-                )
+                # plot.background = element_rect(
+                #     fill   = "grey97",
+                #     colour = "white"
+                # )
             )
         
         
@@ -568,6 +598,137 @@ function(input, output, session) {
     # References:
     # - [1] https://shiny.posit.co/r/getstarted/build-an-app/reactive-flow/render-functions.html
     
+    # Create Spatial Title ------------------------------------------------------------
+    output$spatial_number <- renderText({
+        
+        # Dynamic Variables
+        species_simple_name <- input$simpleName
+        state_name <- input$state
+        
+        ## Create spatial data ---------------------------------------------------
+        spatial_data <- dashboard_data %>% 
+            
+            # We only care about a specific species in a specific state
+            filter(
+                simpleName == species_simple_name,
+                state      == state_name
+            )
+        as.character({
+            spatial_data %>% 
+                nrow() %>% 
+                comma()
+        })
+        
+    })
+    
+    output$spatial_species_simple_name <- renderText({
+        input$simpleName
+    })
+    
+    output$spatial_state_name <- renderText({
+        input$state %>% 
+            str_c(":")
+    })
+    
+
+# Create Temporal Title ---------------------------------------------------
+
+    
+    output$temporal_month <- renderText({
+        
+        # Dynamic Variables
+        species_simple_name <- input$simpleName
+        state_name <- input$state
+        
+        ## Create temporal data ---------------------------------------------------
+        temporal_data <- dashboard_data %>% 
+            
+            # Use full month name in ggplot title
+            mutate(
+                month_full_name = eventDate %>%
+                    as_date() %>%
+                    month(
+                        label = TRUE,
+                        abbr  = FALSE
+                    ) %>%
+                    as_factor()
+            ) %>%
+            
+            # We only care about a specific species in a specific state
+            filter(
+                simpleName == species_simple_name,
+                state      == state_name
+            ) %>% 
+            count(month = month_full_name) %>%
+            
+            # Ref [7]:
+            # Ensure that all months are always displayed
+            # even if there is a month with zero records
+            complete(month = unique(dashboard_data$eventDate %>% 
+                                        as_date() %>% 
+                                        month(label = TRUE, abbr = FALSE) %>% 
+                                        as_factor()), 
+                     fill = list(n = 0)) %>% 
+            mutate(
+                month_full_name = month,
+                month = month_full_name %>% 
+                    str_sub(
+                        start = 1,
+                        end   = 3
+                    )
+            ) %>% 
+            
+            # Ref [6]: Add 13th empty month to provide space for percentage scale
+            add_row(
+                month = "   ",
+                n     = 0
+            ) %>% 
+            
+            # Ensure months are ordered in visualisation
+            arrange(match(
+                month,
+                c(
+                    "   ", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                )
+            )) %>% 
+            
+            # Calculate Proportion
+            mutate(
+                # Ensure that all months are always displayed
+                # even if there is a month with zero records
+                proportion = case_when(
+                    n > 0 ~ n / sum(n),
+                    .default = 0
+                )
+            )
+        
+
+        
+        as.character(
+            {
+                temporal_month <- temporal_data %>%
+                    filter(n == max(temporal_data$n)) %>%
+                    pull(month_full_name) %>%
+                    as.character()
+                
+                if(sum(temporal_data$n) == 0) {
+                    temporal_month <- "No month"
+                }
+                
+                temporal_month
+            }
+        )
+    })
+    
+    output$temporal_species_simple_name <- renderText({
+        input$simpleName
+    })
+    
+    output$temporal_state_name <- renderText({
+        input$state %>% 
+            str_c(":")
+    })
 
 # Download Data -----------------------------------------------------------
 
