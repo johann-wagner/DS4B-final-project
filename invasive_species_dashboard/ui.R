@@ -27,21 +27,21 @@ dashboard_data <- read_csv(
 # RShiny UI ---------------------------------------------------------------
 
 # Ref [1, 2]: Define UI for application
-fluidPage(themeSelector(),
-
-    # Application title Panel
-    titlePanel("Invasive Species Dashboard"),
+fluidPage(
+    
+    # Set theme
+    theme = shinytheme("sandstone"),
 
     # Introduction Panel
     fluidRow(
         column(6,
                wellPanel(
-                   h2("Introduction")
+                   h2(strong("Invasive Species Dashboard"))
                )
         ),
         column(6,
                wellPanel(
-                   h2("123")
+                   h3("123")
                )
         )
     ),
@@ -52,13 +52,14 @@ fluidPage(themeSelector(),
         # Sidebar Panel
         sidebarPanel(
             width = 3,
+            h3("Dashboard Settings"),
             h4(strong("Dynamic Variables")),
             helpText(
                 "Select a specific invasive",
                 strong("species"),
                 "and",
                 strong("state/territory"),
-                "from the dropdown lists below."
+                "from the dropdown lists below:"
             ),
             
             br(),
@@ -83,24 +84,31 @@ fluidPage(themeSelector(),
                         selected = "Australian Capital Territory"
             ),
             
-            checkboxInput("show_data",
-                          label = "Show temporal data table",
-                          value = FALSE
-                          ),
+            # checkboxInput("show_data",
+            #               label = "Show temporal data table",
+            #               value = FALSE
+            #               ),
+            
+            br(),
             
             # Ref [3]: Download Data
             h4(strong("Download Data")),
-            h5(strong("Downloading Filtered Data")),
-            p("If you would like to conduct your own data analysis, then you can download the filtered data below."),
+            h5(strong("Downloading filtered data")),
+            p(
+                "If you would like to conduct your own data analysis, then you can download",
+                strong(em("the filtered data")),
+                "below."
+              ),
             helpText("Select species and state/territory variables, then hit 'Download Filtered Data'."),
             downloadButton("download_filtered_data", "Download Filtered Data"),
             
             br(),
+            br(),
             
-            h5(strong("Downloading All Data")),
+            h5(strong("Downloading the entire dataset")),
             p(
-                "If you would like to conduct your own data analysis",
-                strong(em("on the entire dataset")),
+                "If you would like to conduct your own data analysis on",
+                strong(em("the entire dataset")),
                 "then you can download the whole dataset below."),
             helpText("Hit 'Download All Data'."),
             downloadButton("download_all_data", "Download All Data")
@@ -114,16 +122,43 @@ fluidPage(themeSelector(),
                        wellPanel(
                            # Spatial Visualisation
                            h3("Spatial Visualisation"),
+                           h4(strong("Description")),
                            p(
-                               "The below visualisation spatially showcases the number of records for a specific invasive animal",
+                               "The below visualisation spatially showcases the number of records for the selected invasive animal",
                                strong("species"),
-                               "in a specific",
+                               "in the selected",
                                strong("state/territory.")
                            ),
-                           br(),
+                           h4(strong("How to zoom in")),
+                           p(
+                               "- If you would like to zoom into a specific area, you can hover over the ggplot below and",
+                               em("click-and-drag"),
+                               "a light-blue rectangle.",
+                           ),
+                           p(
+                               "- Once drawn,",
+                               em("double-click"),
+                               "on the light-blue rectangle to zoom into that specific area.",
+                           ),
+                           p(
+                               "- To return to the original scale,",
+                               em("double-click"),
+                               "on the visualisation."
+                           ),
+                           h4(
+                               textOutput("spatial_species_simple_name", container = tags$strong),
+                               "in",
+                               textOutput("spatial_state_name", container = tags$strong),
+                           ),
+                           h5(
+                               "There are",
+                               textOutput("spatial_number", container = tags$strong),
+                               "records."
+                           ),
                            plotOutput(
                                "spatial_visualisation",
                                height = 550,
+                               width  = 550,
                                dblclick = "plot1_dblclick",
                                brush = brushOpts(
                                    id = "plot1_brush",
@@ -137,14 +172,28 @@ fluidPage(themeSelector(),
                        wellPanel(
                            # Temporal Visualisation
                            h3("Temporal Visualisation"),
+                           h4(strong("Description")),
                            p(
-                               "The below visualisation temporally showcases the proportion of records for a specific invasive animal in a specific state/territory by month.",
+                               "The below visualisation temporally showcases the proportion of records for the selected invasive animal in the selected state/territory by month.",
                                "Each coloured bar represents the proportion of records in that specific month with colour showing the relative magnitudes of the proportions."
                            ),
-                           p("- A brighter, yellow colour indicates a higher proportion."),
+                           p("- A brighter, yellow colour indicates a relatively higher proportion."),
                            p("- A darker, red colour indicates a relatively lower proportion."),
                            br(),
-                           plotOutput("temporal_visualisation")
+                           h4(
+                               textOutput("temporal_species_simple_name", container = tags$strong),
+                               "in",
+                               textOutput("temporal_state_name", container = tags$strong),
+                           ),
+                           h5(
+                               textOutput("temporal_month", container = tags$strong),
+                               "has the highest proportion of records.",
+                               ),
+                           plotOutput(
+                               "temporal_visualisation",
+                               height = 500,
+                               width  = 500
+                               )
                        )
                        ),
                 
