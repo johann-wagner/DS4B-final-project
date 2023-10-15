@@ -109,7 +109,8 @@ library(DT)
 ### https://github.com/rstudio/shinythemes
 library(shinythemes)
 
-
+library(bslib)
+library(thematic)
 
 ### Misc ---------------------------------------------------------------------
 # To easily standardise naming conventions based upon a consistent design
