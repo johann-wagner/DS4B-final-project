@@ -117,3 +117,11 @@ dashboard_data %>%
       "dashboard_data.csv"
     )
   )
+
+dashboard_data %>% 
+  write_csv(
+    here(
+      "invasive_species_dashboard",
+      "dashboard_data.csv"
+    )
+  )
