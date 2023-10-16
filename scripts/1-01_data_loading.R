@@ -132,3 +132,17 @@ tidied_data <- raw_rabbits %>%
     raw_pigs,
     raw_red_fire_ants
   )
+
+
+
+
+
+# Save Tidied Data -----------------------------------------------------------
+
+tidied_data %>% 
+  write_csv(
+    here(
+      "processed_data",
+      "tidied_data.csv"
+    )
+  )
