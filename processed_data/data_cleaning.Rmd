@@ -1182,7 +1182,7 @@ Great! Looking good! Let's do a quick `skim()`.
 skim(clean_invasive_species_data)
 ```
 
-Excellent! There are 327,522 rows and the same amount of unique `recordID` values. There are 8 `state` values, which makes sense! There are 7 `simpleName` values, which makes sense as we only pulled 7 different invasive species.
+Excellent! There are 327,522 rows and the same amount of unique `recordID` values. There are 8 unique `state` values, which makes sense! There are 7 `simpleName` values, which makes sense as we only pulled 7 different invasive species.
 
 ### Quick visualisation check
 Let's visually display all the data.

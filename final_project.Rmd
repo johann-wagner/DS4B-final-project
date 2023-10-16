@@ -19,17 +19,16 @@ editor_options:
 
 # Word/figure count
 
-Words: [The number of words in your document, calculated using the
-word_count() function at the end of this document] Figures: [The number
-of figures in your document. You can just count these]
+Words: [The number of words in your document, calculated using the word_count() function at the end of this document]
+Figures: [The number of figures in your document. You can just count these]
 
 # Location on GitHub
 
-[A URL to the root directory of your final project on GitHub]
+The root directory on GitHub: [DS4B-final-project](https://github.com/johann-wagner/DS4B-final-project/tree/main).
 
 # Data Description
 
-The data used in this project is from The Atlas of Living Australia, which is "a collaborative, digital and open infrastructure repository that aggregates biodiversity data from multiple sources" ([ALA, 2022](https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala)).
+The data used in this project is from The Atlas of Living Australia (ALA), which is "a collaborative, digital and open infrastructure repository that aggregates biodiversity data from multiple sources" ([ALA, 2022](https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala)).
 
 Specifically, this analysis uses species occurrence records for seven invasive animal species:
 
@@ -67,7 +66,7 @@ This made me interested in simply visualising the data spatially, instead of usi
 
 Hughes et al. ([2021](https://onlinelibrary.wiley.com/doi/10.1111/ecog.05926)) and Guerin et al. ([2016](https://doi.org/10.1371/journal.pone.0144779)) highlight the spatial sampling bias associated with biodiversity data suggesting that these biases must first be understood before applying any statistical modelling methods. Interestingly, Australian research by Piccolo et al. ([2020](https://www.nature.com/articles/s41598-020-66719-x)) show that reptile research locations are highly positively correlated with proximity to universities suggesting biodiversity research locations are closely associated by accessibility. Similarly, temporal biases can also influence results, as species distributions can change across time ([Boakes et al, 2010](https://doi.org/10.1371/journal.pbio.1000385)).
 
-The Atlas of Living Australia already have a browser-based spatial visualisation app, where a specific species can be selected and plotted on a map. However, there seemed to not be a functionality to compare both the spatial _and_ temporal (by month) variables.
+The Atlas of Living Australia already have a browser-based spatial visualisation tool, where a specific species can be selected and plotted on a map. However, there seemed to not be a functionality to compare both the spatial _and_ temporal (by month) variables.
 
 This dashboard is the beginning data exploration step and in the essence of open and citizen-science, I wanted to make my cleaned data easily available through the dashboard. Data sharing allows for further analysis and reusability ([Tedersoo et al., 2021](https://www.nature.com/articles/s41597-021-00981-0), [Ramachandran et al., 2021](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020EA001562)). I wanted my dashboard to follow the FAIR Data Principles ([Wilkinson et al., 2016](https://www.nature.com/articles/sdata201618)).
 
@@ -79,39 +78,131 @@ The analysis was based off this [ALALabs article](https://labs.ala.org.au/posts/
 
 # Raw data
 
-[Explains how and where to get the exact raw data you got] [Is
-reproducible by a person (required) and a machine (ideally)]
+The raw data is available using the `galah` package. A user must use an ALA-registered email at [ala.org.au](ala.org.au) and use the `galah_config()` function. Once completed, the custom-function `load_galah_occurrence_data()` was used, where the input argument `species_name` was the aforementioned scientific names of the seven species.
 
-2.  In your main .Rmd file make a Raw Data section
-3.  Write down in that how to get the raw data • Note the DOI or URL for
-    the data • Give details of exactly which file(s) someone needs to
-    download so that they could recreate your raw_data folder
+```{r}
+### Purpose:
+# To load the species occurrence data of any given species within the Atlas
+# of Living Australia database.
+suppressPackageStartupMessages({
+  library(galah)
+})
+galah_config(email = "johann.wagner@gmail.com")
+
+load_galah_occurrence_data <- function(
+  # character string of scientific name of species
+  species_name
+) {
+  species_occurrence <- galah_call() |>
+    
+    # To conduct a search for species scientific name
+    galah_identify(species_name) |> # Ref [1]
+    
+    # Pre-applied filter to ensure quality-assured data
+    # the "ALA" profile is designed to exclude lower quality records Ref [2]
+    galah_apply_profile(ALA) |> 
+    atlas_occurrences(mint_doi = TRUE)
+  
+  return(species_occurrence)
+}
+
+
+
+# References:
+# - [1] https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/692effa3-b719-495f-a86f-ce89e2981652
+# - [2] https://galah.ala.org.au/R/reference/galah_apply_profile.html
+```
+
+The DOIs for each species:
+
+1.  [European Rabbits (Oryctolagus cuniculus)](https://doi.org/10.26197/ala.d0da2524-838a-4540-a160-fba8088f4850)
+
+2.  [European Red Foxes (Vulpes vulpes)](https://doi.org/10.26197/ala.5f700174-e92e-4376-a243-be05ffa93f46)
+
+3.  [Cane Toads (Rhinella marina)](https://doi.org/10.26197/ala.d6d70c2c-00de-4f76-8ea6-598b9562eb64)
+
+4.  [Feral Cats (Felis catus)](https://doi.org/10.26197/ala.57a58cdc-88c0-45c1-9260-bd17c6fc4b62)
+
+5.  [Feral Horses (Equus (Equus) caballus)](https://doi.org/10.26197/ala.c3cebb21-c2e0-41d0-8b5d-f446c2914827)
+
+6.  [Feral Pigs (Sus scrofa)](https://doi.org/10.26197/ala.952aa727-1915-4c3f-8399-ed940c24bfef)
+
+7.  [Red Imported Fire Ants (Solenopsis invicta)](https://doi.org/10.26197/ala.74b5dd29-4287-473d-8391-9184c8c62554)
 
 # Data wrangling
 
-[R chunks and prose which:] [Tidies up your raw data, outputs
-tidied_data.csv] [Cleans up your tidied data, outputs cleaned_data.csv]
+Because the data is already in tidy format, the seven datasets are binded into one `tidied_data.csv`, then filtered with `excluded_data.csv`. The excluded data includes any `NA` values in the `eventDate`, `decimalLongitude`, and `decimalLatitude` columns and also includes data not located within any of the [*State and Territories - 2021*](https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/digital-boundary-files) spatial boundaries provided by the Australian Bureau of Statistics (ABS). Further details of this process can be found in the [scripts folder](https://github.com/johann-wagner/DS4B-final-project/tree/main/scripts) and [data_cleaning.Rmd](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/data_cleaning.Rmd).
 
-• loads in your excluded_data.csv file • loads in your tidied_data.csv
-file • removes the appropriate data from tidied_data.csv based on
-excluded_data.csv • saves a new file called cleaned_data.csv
+```{r}
+suppressPackageStartupMessages({
+  library(readr)
+  library(tidyverse)
+})
+  
+excluded_data <- read_csv("processed_data/excluded_data.csv")
+tidied_data <- read_csv("processed_data/tidied_data.csv")
+
+cleaned_data <- tidied_data %>% 
+  anti_join(
+    excluded_data,
+    join_by(recordID)
+  )
+```
 
 # Sanity checks
 
-[R chunks and prose which perform sanity checks on your cleaned data]
-[Remember that this really just summarises that your data are OK after
-you've cleaned them] [Most of the real sanity checks and data cleaning
-go on in the data_cleaning.Rmd file]
+Let's use `skim()` to do some sanity checks.
 
-• Include enough sanity checks to convince yourself (and whoever will be
-grading your work) that your data are clean enough for your particular
-purposes • You will never find and remove all errors, but you must be
-reasonably sure that you have found any errors which might affect your
-conclusions
+```{r}
+suppressPackageStartupMessages({
+  library(skimr)
+})
+skim(cleaned_data)
+```
+
+There are 328,342 records with the same number of unique values in the `recordID` column indicating each record is distinct. There are 8 unique `state` values and 7 `simpleName` values, which makes sense. The latest `eventDate` value is 2023-10-09, which is not in the future.
+
+Let's spatially showcase the data.
+
+```{r}
+suppressPackageStartupMessages({
+  options(timeout = 1000)
+  devtools::install_github("wfmackey/absmapsdata")
+  # To easily access the Australian Bureau of Statistics (ABS) spatial structures
+  ### https://github.com/wfmackey/absmapsdata
+  library(absmapsdata)
+  library(ggplot2)
+})
+state2021 %>% 
+  # Only state/territories
+  filter(!state_code_2021 %in% c("9", "Z")) %>% 
+  ggplot() +
+  
+  # Ref [1]: Create background polygon of the ACT
+  geom_sf(
+    aes(geometry = geometry)
+  ) +
+  
+  geom_point(
+    data = cleaned_data,
+    aes(
+      x = decimalLongitude,
+      y = decimalLatitude
+    ),
+    alpha = 0.1,
+    size  = 0.7
+  ) +
+  
+  coord_sf() +
+  
+  theme_minimal() +
+  
+  labs(title = "Sanity Checked! All data points are in Australia!")
+```
+
+Interestingly, it seems that there are a few observations that are to the east of the NSW border, which is likely an island part of NSW.
 
 # Addressing the questions/aims
-
-FINISH BROAD
 
 [This is the *main* section of your work. For example, if you are doing
 an EDA, this is where you would summarise it. If you are building
@@ -133,3 +224,4 @@ https://www.nature.com/articles/s41597-021-00981-0), https://agupubs.onlinelibra
 
 https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf (DOI unavailable)
 https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
+- https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/digital-boundary-files
