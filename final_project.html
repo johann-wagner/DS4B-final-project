@@ -1487,26 +1487,120 @@ of figures in your document. You can just count these]</p>
 </div>
 <div id="data-description" class="section level1">
 <h1>Data Description</h1>
-<p>[A brief (~100-200 words should be more than enough) description of
-the dataset, referencing any key publications that go with it]</p>
+<p>The data used in this project is from The Atlas of Living Australia,
+which is “a collaborative, digital and open infrastructure repository
+that aggregates biodiversity data from multiple sources” (<a href="https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala">ALA,
+2022</a>).</p>
+<p>Specifically, this analysis uses species occurrence records for seven
+invasive animal species:</p>
+<ol style="list-style-type: decimal">
+<li><p><a href="https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/692effa3-b719-495f-a86f-ce89e2981652">European
+Rabbits (Oryctolagus cuniculus)</a></p></li>
+<li><p><a href="https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/2869ce8a-8212-46c2-8327-dfb7fabb8296">European
+Red Foxes (Vulpes vulpes)</a></p></li>
+<li><p><a href="https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/e79179f8-44bf-46eb-b139-a2e66f6045c1">Cane
+Toads (Rhinella marina)</a></p></li>
+<li><p><a href="https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/7de6b16a-f854-4b4b-88cf-81868ce74ad8">Feral
+Cats (Felis catus)</a></p></li>
+<li><p><a href="https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/86b4395d-97a7-470d-b35b-306e01dfbab6">Feral
+Horses (Equus (Equus) caballus)</a></p></li>
+<li><p><a href="https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/948d8ca1-62fc-4d03-a79d-4be2de837264">Feral
+Pigs (Sus scrofa)</a></p></li>
+<li><p><a href="https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/5b3fe1c6-1c2c-4e20-819f-2e6d8fa3d332">Red
+Imported Fire Ants (Solenopsis invicta)</a></p></li>
+</ol>
+<p>I was interested in the spatial and temporal variables for all 7
+species, particularly the longitude and latitude values
+(<code>decimalLongitude</code> and <code>decimalLatitude</code>) and
+date of recording (<code>eventDate</code>) for each record.</p>
 </div>
 <div id="questionsaims" class="section level1">
 <h1>Questions/Aims</h1>
-<p>[A brief section which first states and then justifies the
-questions/aims of your EDA. Must provide evidence of independent
-research into what has been done before on these questions/aims. See
-above for examples.]</p>
+<div id="initial-aims" class="section level2">
+<h2>Initial Aims:</h2>
+<ol style="list-style-type: decimal">
+<li><p>Develop an RShiny app that showcases the spatial and temporal
+(monthly) occurrence of <del>the top 5-10</del> 7 invasive animal
+species in Australia by state/territory <del>and by regionality (urban
+vs. regional)</del></p></li>
+<li><p><del>Visualise and calculate the proportion of the selected
+invasive animal species observed in an urban area</del></p></li>
+<li><p>Create a download option for users to download the cleaned
+dataset for the selected invasive animal species for a particular
+state/territory</p></li>
+</ol>
+</div>
+<div id="justifications" class="section level2">
+<h2>Justifications:</h2>
+<p>Initially, I was interested in the spatial distribution of magpies in
+Canberra as I am an avid cyclist and wanted to find the hotspots of
+magpie records and linking/statistically modelling this data with a
+collaborative magpie swooping database called <a href="https://www.magpiealert.com/">magpiealert.com</a>. Unfortunately,
+the data was not available and the sampling bias of the occurrence data
+may not be truely representative, as observations are more likely to be
+near roads, airports, and major urban areas (<a href="https://labs.ala.org.au/posts/2022-07-22_sample-bias/post.html?panelset=mantids">Kellie,
+2022</a>).</p>
+<p>This made me interested in simply visualising the data spatially,
+instead of using any statistical methodologies and focusing the project
+on whether there would be major differences/patterns of occurrence
+records in urban vs. non-urban/regional areas. Unfortunately, given the
+scope of the project, calculating the urban vs. non-urban analysis would
+have been too much scope-creep, so this aim was ignored (maybe
+post-project exploration).</p>
+<p>Hughes et al. (<a href="https://onlinelibrary.wiley.com/doi/10.1111/ecog.05926">2021</a>)
+and Guerin et al. (<a href="https://doi.org/10.1371/journal.pone.0144779">2016</a>) highlight
+the spatial sampling bias associated with biodiversity data suggesting
+that these biases must first be understood before applying any
+statistical modelling methods. Interestingly, Australian research by
+Piccolo et al. (<a href="https://www.nature.com/articles/s41598-020-66719-x">2020</a>) show
+that reptile research locations are highly positively correlated with
+proximity to universities suggesting biodiversity research locations are
+closely associated by accessibility. Similarly, temporal biases can also
+influence results, as species distributions can change across time (<a href="https://doi.org/10.1371/journal.pbio.1000385">Boakes et al,
+2010</a>).</p>
+<p>The Atlas of Living Australia already have a browser-based spatial
+visualisation app, where a specific species can be selected and plotted
+on a map. However, there seemed to not be a functionality to compare
+both the spatial <em>and</em> temporal (by month) variables.</p>
+<p>This dashboard is the beginning data exploration step and in the
+essence of open and citizen-science, I wanted to make my cleaned data
+easily available through the dashboard. Data sharing allows for further
+analysis and reusability (<a href="https://www.nature.com/articles/s41597-021-00981-0">Tedersoo et
+al., 2021</a>, <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020EA001562">Ramachandran
+et al., 2021</a>). I wanted my dashboard to follow the FAIR Data
+Principles (<a href="https://www.nature.com/articles/sdata201618">Wilkinson et al.,
+2016</a>).</p>
+<p>I chose invasive animal species, because of the numerous rabbits I
+see whenever I go cycling in Canberra. The other 6 species were chosen
+arbitrary based off this <a href="https://www.nespthreatenedspecies.edu.au/news-and-media/media-releases/australia-s-10-worst-invasive-species-study">article</a>,
+which summarises the results from Kearney et al.’s paper (<a href="https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf">2018</a>).</p>
+<p>A deeper understanding of my thought process is documented in GitHub
+Issue <a href="https://github.com/johann-wagner/DS4B-final-project/issues/4"><code>#4</code></a>.</p>
+<p>The analysis was based off this <a href="https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html">ALALabs
+article</a> (<a href="https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html">Smith
+et al., 2023</a>).</p>
+</div>
 </div>
 <div id="raw-data" class="section level1">
 <h1>Raw data</h1>
 <p>[Explains how and where to get the exact raw data you got] [Is
 reproducible by a person (required) and a machine (ideally)]</p>
+<ol start="2" style="list-style-type: decimal">
+<li>In your main .Rmd file make a Raw Data section</li>
+<li>Write down in that how to get the raw data • Note the DOI or URL for
+the data • Give details of exactly which file(s) someone needs to
+download so that they could recreate your raw_data folder</li>
+</ol>
 </div>
 <div id="data-wrangling" class="section level1">
 <h1>Data wrangling</h1>
 <p>[R chunks and prose which:] [Tidies up your raw data, outputs
 tidied_data.csv] [Cleans up your tidied data, outputs
 cleaned_data.csv]</p>
+<p>• loads in your excluded_data.csv file • loads in your
+tidied_data.csv file • removes the appropriate data from tidied_data.csv
+based on excluded_data.csv • saves a new file called
+cleaned_data.csv</p>
 </div>
 <div id="sanity-checks" class="section level1">
 <h1>Sanity checks</h1>
@@ -1514,9 +1608,15 @@ cleaned_data.csv]</p>
 [Remember that this really just summarises that your data are OK after
 you’ve cleaned them] [Most of the real sanity checks and data cleaning
 go on in the data_cleaning.Rmd file]</p>
+<p>• Include enough sanity checks to convince yourself (and whoever will
+be grading your work) that your data are clean enough for your
+particular purposes • You will never find and remove all errors, but you
+must be reasonably sure that you have found any errors which might
+affect your conclusions</p>
 </div>
 <div id="addressing-the-questionsaims" class="section level1">
 <h1>Addressing the questions/aims</h1>
+<p>FINISH BROAD</p>
 <p>[This is the <em>main</em> section of your work. For example, if you
 are doing an EDA, this is where you would summarise it. If you are
 building something like a package or shiny app, a description of that
@@ -1525,7 +1625,16 @@ appropriate sub-headings.]</p>
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>
-<p>[References you have cited throughout your text]</p>
+<ul>
+<li><a href="https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala" class="uri">https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala</a></li>
+<li><a href="https://onlinelibrary.wiley.com/doi/10.1111/ecog.05926" class="uri">https://onlinelibrary.wiley.com/doi/10.1111/ecog.05926</a></li>
+<li><a href="https://labs.ala.org.au/posts/2022-07-22_sample-bias/post.html?panelset=mantids" class="uri">https://labs.ala.org.au/posts/2022-07-22_sample-bias/post.html?panelset=mantids</a>
+<a href="https://doi.org/10.1371/journal.pone.0144779" class="uri">https://doi.org/10.1371/journal.pone.0144779</a></li>
+<li><a href="https://doi.org/10.1371/journal.pbio.1000385" class="uri">https://doi.org/10.1371/journal.pbio.1000385</a> <a href="https://www.nature.com/articles/s41598-020-66719-x" class="uri">https://www.nature.com/articles/s41598-020-66719-x</a> <a href="https://www.nature.com/articles/sdata201618" class="uri">https://www.nature.com/articles/sdata201618</a></li>
+</ul>
+<p><a href="https://www.nature.com/articles/s41597-021-00981-0" class="uri">https://www.nature.com/articles/s41597-021-00981-0</a>), <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020EA001562" class="uri">https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020EA001562</a></p>
+<p><a href="https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf" class="uri">https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf</a>
+(DOI unavailable) <a href="https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html" class="uri">https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html</a></p>
 </div>
 
 

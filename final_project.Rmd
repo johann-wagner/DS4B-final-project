@@ -12,12 +12,16 @@ output:
         highlight: pygments
         fig_width: 8
         fig_height: 4
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 # Word/figure count
 
-Words: [The number of words in your document, calculated using the word_count() function at the end of this document]
-Figures: [The number of figures in your document. You can just count these]
+Words: [The number of words in your document, calculated using the
+word_count() function at the end of this document] Figures: [The number
+of figures in your document. You can just count these]
 
 # Location on GitHub
 
@@ -25,54 +29,107 @@ Figures: [The number of figures in your document. You can just count these]
 
 # Data Description
 
-[A brief (~100-200 words should be more than enough) description of the dataset, referencing any key publications that go with it]
+The data used in this project is from The Atlas of Living Australia, which is "a collaborative, digital and open infrastructure repository that aggregates biodiversity data from multiple sources" ([ALA, 2022](https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala)).
+
+Specifically, this analysis uses species occurrence records for seven invasive animal species:
+
+1.  [European Rabbits (Oryctolagus cuniculus)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/692effa3-b719-495f-a86f-ce89e2981652)
+
+2.  [European Red Foxes (Vulpes vulpes)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/2869ce8a-8212-46c2-8327-dfb7fabb8296)
+
+3.  [Cane Toads (Rhinella marina)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/e79179f8-44bf-46eb-b139-a2e66f6045c1)
+
+4.  [Feral Cats (Felis catus)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/7de6b16a-f854-4b4b-88cf-81868ce74ad8)
+
+5.  [Feral Horses (Equus (Equus) caballus)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/86b4395d-97a7-470d-b35b-306e01dfbab6)
+
+6.  [Feral Pigs (Sus scrofa)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/948d8ca1-62fc-4d03-a79d-4be2de837264)
+
+7.  [Red Imported Fire Ants (Solenopsis invicta)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/5b3fe1c6-1c2c-4e20-819f-2e6d8fa3d332)
+
+I was interested in the spatial and temporal variables for all 7 species, particularly the longitude and latitude values (`decimalLongitude` and `decimalLatitude`) and date of recording (`eventDate`) for each record.
 
 # Questions/Aims
 
-[A brief section which first states and then justifies the questions/aims of your EDA. Must provide evidence of independent research into what has been done before on these questions/aims. See above for examples.]
+## Initial Aims:
 
-START BROAD PREDATOR PREY
+1.   Develop an RShiny app that showcases the spatial and temporal (monthly) occurrence of ~~the top 5-10~~ 7 invasive animal species in Australia by state/territory ~~and by regionality (urban vs. regional)~~
+
+2.   ~~Visualise and calculate the proportion of the selected invasive animal species observed in an urban area~~
+
+3.   Create a download option for users to download the cleaned dataset for the selected invasive animal species for a particular state/territory
+
+## Justifications:
+
+Initially, I was interested in the spatial distribution of magpies in Canberra as I am an avid cyclist and wanted to find the hotspots of magpie records and linking/statistically modelling this data with a collaborative magpie swooping database called [magpiealert.com](https://www.magpiealert.com/). Unfortunately, the data was not available and the sampling bias of the occurrence data may not be truely representative, as observations are more likely to be near roads, airports, and major urban areas ([Kellie, 2022](https://labs.ala.org.au/posts/2022-07-22_sample-bias/post.html?panelset=mantids)).
+
+This made me interested in simply visualising the data spatially, instead of using any statistical methodologies and focusing the project on whether there would be major differences/patterns of occurrence records in urban vs. non-urban/regional areas. Unfortunately, given the scope of the project, calculating the urban vs. non-urban analysis would have been too much scope-creep, so this aim was ignored (maybe post-project exploration).
+
+Hughes et al. ([2021](https://onlinelibrary.wiley.com/doi/10.1111/ecog.05926)) and Guerin et al. ([2016](https://doi.org/10.1371/journal.pone.0144779)) highlight the spatial sampling bias associated with biodiversity data suggesting that these biases must first be understood before applying any statistical modelling methods. Interestingly, Australian research by Piccolo et al. ([2020](https://www.nature.com/articles/s41598-020-66719-x)) show that reptile research locations are highly positively correlated with proximity to universities suggesting biodiversity research locations are closely associated by accessibility. Similarly, temporal biases can also influence results, as species distributions can change across time ([Boakes et al, 2010](https://doi.org/10.1371/journal.pbio.1000385)).
+
+The Atlas of Living Australia already have a browser-based spatial visualisation app, where a specific species can be selected and plotted on a map. However, there seemed to not be a functionality to compare both the spatial _and_ temporal (by month) variables.
+
+This dashboard is the beginning data exploration step and in the essence of open and citizen-science, I wanted to make my cleaned data easily available through the dashboard. Data sharing allows for further analysis and reusability ([Tedersoo et al., 2021](https://www.nature.com/articles/s41597-021-00981-0), [Ramachandran et al., 2021](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020EA001562)). I wanted my dashboard to follow the FAIR Data Principles ([Wilkinson et al., 2016](https://www.nature.com/articles/sdata201618)).
+
+I chose invasive animal species, because of the numerous rabbits I see whenever I go cycling in Canberra. The other 6 species were chosen arbitrary based off this [article](https://www.nespthreatenedspecies.edu.au/news-and-media/media-releases/australia-s-10-worst-invasive-species-study), which summarises the results from Kearney et al.'s paper ([2018](https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf)).
+
+A deeper understanding of my thought process is documented in GitHub Issue [`#4`](https://github.com/johann-wagner/DS4B-final-project/issues/4).
+
+The analysis was based off this [ALALabs article](https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html) ([Smith et al., 2023](https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html)).
 
 # Raw data
 
-[Explains how and where to get the exact raw data you got]
-[Is reproducible by a person (required) and a machine (ideally)]
+[Explains how and where to get the exact raw data you got] [Is
+reproducible by a person (required) and a machine (ideally)]
 
-2. In your main .Rmd file make a Raw Data section
-3. Write down in that how to get the raw data
-• Note the DOI or URL for the data
-• Give details of exactly which file(s) someone needs to download so that they could recreate
-your raw_data folder
+2.  In your main .Rmd file make a Raw Data section
+3.  Write down in that how to get the raw data • Note the DOI or URL for
+    the data • Give details of exactly which file(s) someone needs to
+    download so that they could recreate your raw_data folder
 
 # Data wrangling
 
-[R chunks and prose which:]
-[Tidies up your raw data, outputs tidied_data.csv]
-[Cleans up your tidied data, outputs cleaned_data.csv]
+[R chunks and prose which:] [Tidies up your raw data, outputs
+tidied_data.csv] [Cleans up your tidied data, outputs cleaned_data.csv]
 
-• loads in your excluded_data.csv file
-• loads in your tidied_data.csv file
-• removes the appropriate data from tidied_data.csv based on excluded_data.csv
-• saves a new file called cleaned_data.csv
+• loads in your excluded_data.csv file • loads in your tidied_data.csv
+file • removes the appropriate data from tidied_data.csv based on
+excluded_data.csv • saves a new file called cleaned_data.csv
 
 # Sanity checks
 
 [R chunks and prose which perform sanity checks on your cleaned data]
-[Remember that this really just summarises that your data are OK after you've cleaned them]
-[Most of the real sanity checks and data cleaning go on in the data_cleaning.Rmd file]
+[Remember that this really just summarises that your data are OK after
+you've cleaned them] [Most of the real sanity checks and data cleaning
+go on in the data_cleaning.Rmd file]
 
-• Include enough sanity checks to convince yourself (and whoever will be grading your work) that your data are clean
-enough for your particular purposes
-• You will never find and remove all errors, but you must be reasonably sure that you have found any errors which might
-affect your conclusions
+• Include enough sanity checks to convince yourself (and whoever will be
+grading your work) that your data are clean enough for your particular
+purposes • You will never find and remove all errors, but you must be
+reasonably sure that you have found any errors which might affect your
+conclusions
 
 # Addressing the questions/aims
 
 FINISH BROAD
 
-[This is the *main* section of your work. For example, if you are doing an EDA, this is where you would summarise it. If you are building something like a package or shiny app, a description of that package / app and demonstration of its function(s) would go here. Use appropriate sub-headings.]
-
+[This is the *main* section of your work. For example, if you are doing
+an EDA, this is where you would summarise it. If you are building
+something like a package or shiny app, a description of that package /
+app and demonstration of its function(s) would go here. Use appropriate
+sub-headings.]
 
 # References
 
-[References you have cited throughout your text]
+-   <https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala>
+-   https://onlinelibrary.wiley.com/doi/10.1111/ecog.05926
+-   https://labs.ala.org.au/posts/2022-07-22_sample-bias/post.html?panelset=mantids
+https://doi.org/10.1371/journal.pone.0144779
+- https://doi.org/10.1371/journal.pbio.1000385
+https://www.nature.com/articles/s41598-020-66719-x
+https://www.nature.com/articles/sdata201618
+
+https://www.nature.com/articles/s41597-021-00981-0), https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020EA001562
+
+https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf (DOI unavailable)
+https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
