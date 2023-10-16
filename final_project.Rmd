@@ -19,13 +19,12 @@ editor_options:
 
 # Word/figure count
 
-Words: [The number of words in your document, calculated using the
-word_count() function at the end of this document] Figures: [The number
-of figures in your document. You can just count these]
+Words: [The number of words in your document, calculated using the word_count() function at the end of this document]
+Figures: [The number of figures in your document. You can just count these]
 
 # Location on GitHub
 
-[A URL to the root directory of your final project on GitHub]
+The root directory on GitHub: [DS4B-final-project](https://github.com/johann-wagner/DS4B-final-project/tree/main).
 
 # Data Description
 
@@ -85,7 +84,9 @@ The raw data is available using the `galah` package. A user must use an ALA-regi
 ### Purpose:
 # To load the species occurrence data of any given species within the Atlas
 # of Living Australia database.
-library(galah)
+suppressPackageStartupMessages({
+  library(galah)
+})
 galah_config(email = "johann.wagner@gmail.com")
 
 load_galah_occurrence_data <- function(
@@ -133,9 +134,11 @@ The DOIs for each species:
 Because the data is already in tidy format, the seven datasets are binded into one `tidied_data.csv`, then filtered with `excluded_data.csv`. The excluded data includes any `NA` values in the `eventDate`, `decimalLongitude`, and `decimalLatitude` columns and also includes data not located within any of the [*State and Territories - 2021*](https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/digital-boundary-files) spatial boundaries provided by the Australian Bureau of Statistics (ABS). Further details of this process can be found in the [scripts folder](https://github.com/johann-wagner/DS4B-final-project/tree/main/scripts) and [data_cleaning.Rmd](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/data_cleaning.Rmd).
 
 ```{r}
-library(readr)
-library(tidyverse)
-
+suppressPackageStartupMessages({
+  library(readr)
+  library(tidyverse)
+})
+  
 excluded_data <- read_csv("processed_data/excluded_data.csv")
 tidied_data <- read_csv("processed_data/tidied_data.csv")
 
@@ -148,21 +151,12 @@ cleaned_data <- tidied_data %>%
 
 # Sanity checks
 
-[R chunks and prose which perform sanity checks on your cleaned data]
-[Remember that this really just summarises that your data are OK after
-you've cleaned them] [Most of the real sanity checks and data cleaning
-go on in the data_cleaning.Rmd file]
-
-• Include enough sanity checks to convince yourself (and whoever will be
-grading your work) that your data are clean enough for your particular
-purposes • You will never find and remove all errors, but you must be
-reasonably sure that you have found any errors which might affect your
-conclusions
-
 Let's use `skim()` to do some sanity checks.
 
 ```{r}
-library(skimr)
+suppressPackageStartupMessages({
+  library(skimr)
+})
 skim(cleaned_data)
 ```
 
@@ -171,13 +165,14 @@ There are 328,342 records with the same number of unique values in the `recordID
 Let's spatially showcase the data.
 
 ```{r}
-options(timeout = 1000)
-devtools::install_github("wfmackey/absmapsdata")
-# To easily access the Australian Bureau of Statistics (ABS) spatial structures
-### https://github.com/wfmackey/absmapsdata
-library(absmapsdata)
-library(ggplot2)
-
+suppressPackageStartupMessages({
+  options(timeout = 1000)
+  devtools::install_github("wfmackey/absmapsdata")
+  # To easily access the Australian Bureau of Statistics (ABS) spatial structures
+  ### https://github.com/wfmackey/absmapsdata
+  library(absmapsdata)
+  library(ggplot2)
+})
 state2021 %>% 
   # Only state/territories
   filter(!state_code_2021 %in% c("9", "Z")) %>% 
@@ -202,7 +197,7 @@ state2021 %>%
   
   theme_minimal() +
   
-  labs(title = "Sanity Checks: All data points in Australia")
+  labs(title = "Sanity Checked! All data points are in Australia!")
 ```
 
 Interestingly, it seems that there are a few observations that are to the east of the NSW border, which is likely an island part of NSW.
