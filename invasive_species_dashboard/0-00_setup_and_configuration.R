@@ -109,8 +109,15 @@ library(DT)
 ### https://github.com/rstudio/shinythemes
 library(shinythemes)
 
+# To easily provide modern customizable UI themes and dashboards
+### https://rstudio.github.io/bslib/
 library(bslib)
+
+# To simplify themeing both RShiny UI and ggplot2 outputs
+### https://rstudio.github.io/thematic/
 library(thematic)
+
+
 
 ### Misc ---------------------------------------------------------------------
 # To easily standardise naming conventions based upon a consistent design
