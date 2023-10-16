@@ -28,7 +28,7 @@ load_galah_occurrence_data <- function(
     # Pre-applied filter to ensure quality-assured data
     # the "ALA" profile is designed to exclude lower quality records Ref [2]
     galah_apply_profile(ALA) %>% 
-    atlas_occurrences()
+    atlas_occurrences(mint_doi = TRUE)
   
   return(species_occurrence)
 }
