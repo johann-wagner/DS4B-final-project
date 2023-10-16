@@ -112,7 +112,7 @@ load_galah_occurrence_data <- function(
 # - [2] https://galah.ala.org.au/R/reference/galah_apply_profile.html
 ```
 
-The specifc DOIs for each species:
+The DOIs for each species:
 
 1.  [European Rabbits (Oryctolagus cuniculus)](https://doi.org/10.26197/ala.d0da2524-838a-4540-a160-fba8088f4850)
 
@@ -144,15 +144,6 @@ cleaned_data <- tidied_data %>%
     excluded_data,
     join_by(recordID)
   )
-
-
-
-# Save Cleaned Data -----------------------------------------------------------
-cleaned_data %>% 
-  write_csv(
-      "processed_data/cleaned_data.csv"
-  )
-
 ```
 
 # Sanity checks
@@ -168,9 +159,55 @@ purposes • You will never find and remove all errors, but you must be
 reasonably sure that you have found any errors which might affect your
 conclusions
 
-# Addressing the questions/aims
+Let's use `skim()` to do some sanity checks.
 
-FINISH BROAD
+```{r}
+library(skimr)
+skim(cleaned_data)
+```
+
+There are 328,342 records with the same number of unique values in the `recordID` column indicating each record is distinct. There are 8 unique `state` values and 7 `simpleName` values, which makes sense. The latest `eventDate` value is 2023-10-09, which is not in the future.
+
+Let's spatially showcase the data.
+
+```{r}
+options(timeout = 1000)
+devtools::install_github("wfmackey/absmapsdata")
+# To easily access the Australian Bureau of Statistics (ABS) spatial structures
+### https://github.com/wfmackey/absmapsdata
+library(absmapsdata)
+library(ggplot2)
+
+state2021 %>% 
+  # Only state/territories
+  filter(!state_code_2021 %in% c("9", "Z")) %>% 
+  ggplot() +
+  
+  # Ref [1]: Create background polygon of the ACT
+  geom_sf(
+    aes(geometry = geometry)
+  ) +
+  
+  geom_point(
+    data = cleaned_data,
+    aes(
+      x = decimalLongitude,
+      y = decimalLatitude
+    ),
+    alpha = 0.1,
+    size  = 0.7
+  ) +
+  
+  coord_sf() +
+  
+  theme_minimal() +
+  
+  labs(title = "Sanity Checks: All data points in Australia")
+```
+
+Interestingly, it seems that there are a few observations that are to the east of the NSW border, which is likely an island part of NSW.
+
+# Addressing the questions/aims
 
 [This is the *main* section of your work. For example, if you are doing
 an EDA, this is where you would summarise it. If you are building
