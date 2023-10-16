@@ -1307,6 +1307,107 @@ ul.task-list{list-style: none;}
 
 
 
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 
@@ -1487,9 +1588,9 @@ of figures in your document. You can just count these]</p>
 </div>
 <div id="data-description" class="section level1">
 <h1>Data Description</h1>
-<p>The data used in this project is from The Atlas of Living Australia,
-which is “a collaborative, digital and open infrastructure repository
-that aggregates biodiversity data from multiple sources” (<a href="https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala">ALA,
+<p>The data used in this project is from The Atlas of Living Australia
+(ALA), which is “a collaborative, digital and open infrastructure
+repository that aggregates biodiversity data from multiple sources” (<a href="https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala">ALA,
 2022</a>).</p>
 <p>Specifically, this analysis uses species occurrence records for seven
 invasive animal species:</p>
@@ -1559,7 +1660,7 @@ closely associated by accessibility. Similarly, temporal biases can also
 influence results, as species distributions can change across time (<a href="https://doi.org/10.1371/journal.pbio.1000385">Boakes et al,
 2010</a>).</p>
 <p>The Atlas of Living Australia already have a browser-based spatial
-visualisation app, where a specific species can be selected and plotted
+visualisation tool, where a specific species can be selected and plotted
 on a map. However, there seemed to not be a functionality to compare
 both the spatial <em>and</em> temporal (by month) variables.</p>
 <p>This dashboard is the beginning data exploration step and in the
@@ -1583,24 +1684,132 @@ et al., 2023</a>).</p>
 </div>
 <div id="raw-data" class="section level1">
 <h1>Raw data</h1>
-<p>[Explains how and where to get the exact raw data you got] [Is
-reproducible by a person (required) and a machine (ideally)]</p>
-<ol start="2" style="list-style-type: decimal">
-<li>In your main .Rmd file make a Raw Data section</li>
-<li>Write down in that how to get the raw data • Note the DOI or URL for
-the data • Give details of exactly which file(s) someone needs to
-download so that they could recreate your raw_data folder</li>
+<p>The raw data is available using the <code>galah</code> package. A
+user must use an ALA-registered email at <a href="ala.org.au">ala.org.au</a> and use the <code>galah_config()</code>
+function. Once completed, the custom-function
+<code>load_galah_occurrence_data()</code> was used, where the input
+argument <code>species_name</code> was the aforementioned scientific
+names of the seven species.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="do">### Purpose:</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co"># To load the species occurrence data of any given species within the Atlas</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># of Living Australia database.</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(galah)</span></code></pre></div>
+<pre><code>## Warning: package &#39;galah&#39; was built under R version 4.2.3</code></pre>
+<pre><code>## 
+## Attaching package: &#39;galah&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">galah_config</span>(<span class="at">email =</span> <span class="st">&quot;johann.wagner@gmail.com&quot;</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>load_galah_occurrence_data <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="co"># character string of scientific name of species</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  species_name</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>) {</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  species_occurrence <span class="ot">&lt;-</span> <span class="fu">galah_call</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>    </span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>    <span class="co"># To conduct a search for species scientific name</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>    <span class="fu">galah_identify</span>(species_name) <span class="sc">|&gt;</span> <span class="co"># Ref [1]</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>    </span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>    <span class="co"># Pre-applied filter to ensure quality-assured data</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>    <span class="co"># the &quot;ALA&quot; profile is designed to exclude lower quality records Ref [2]</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>    <span class="fu">galah_apply_profile</span>(ALA) <span class="sc">|&gt;</span> </span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>    <span class="fu">atlas_occurrences</span>(<span class="at">mint_doi =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>  </span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>  <span class="fu">return</span>(species_occurrence)</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>}</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="co"># References:</span></span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a><span class="co"># - [1] https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/692effa3-b719-495f-a86f-ce89e2981652</span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a><span class="co"># - [2] https://galah.ala.org.au/R/reference/galah_apply_profile.html</span></span></code></pre></div>
+<p>The specifc DOIs for each species:</p>
+<ol style="list-style-type: decimal">
+<li><p><a href="https://doi.org/10.26197/ala.d0da2524-838a-4540-a160-fba8088f4850">European
+Rabbits (Oryctolagus cuniculus)</a></p></li>
+<li><p><a href="https://doi.org/10.26197/ala.5f700174-e92e-4376-a243-be05ffa93f46">European
+Red Foxes (Vulpes vulpes)</a></p></li>
+<li><p><a href="https://doi.org/10.26197/ala.d6d70c2c-00de-4f76-8ea6-598b9562eb64">Cane
+Toads (Rhinella marina)</a></p></li>
+<li><p><a href="https://doi.org/10.26197/ala.57a58cdc-88c0-45c1-9260-bd17c6fc4b62">Feral
+Cats (Felis catus)</a></p></li>
+<li><p><a href="https://doi.org/10.26197/ala.c3cebb21-c2e0-41d0-8b5d-f446c2914827">Feral
+Horses (Equus (Equus) caballus)</a></p></li>
+<li><p><a href="https://doi.org/10.26197/ala.952aa727-1915-4c3f-8399-ed940c24bfef">Feral
+Pigs (Sus scrofa)</a></p></li>
+<li><p><a href="https://doi.org/10.26197/ala.74b5dd29-4287-473d-8391-9184c8c62554">Red
+Imported Fire Ants (Solenopsis invicta)</a></p></li>
 </ol>
 </div>
 <div id="data-wrangling" class="section level1">
 <h1>Data wrangling</h1>
-<p>[R chunks and prose which:] [Tidies up your raw data, outputs
-tidied_data.csv] [Cleans up your tidied data, outputs
-cleaned_data.csv]</p>
-<p>• loads in your excluded_data.csv file • loads in your
-tidied_data.csv file • removes the appropriate data from tidied_data.csv
-based on excluded_data.csv • saves a new file called
-cleaned_data.csv</p>
+<p>Because the data is already in tidy format, the seven datasets are
+binded into one <code>tidied_data.csv</code>, then filtered with
+<code>excluded_data.csv</code>. The excluded data includes any
+<code>NA</code> values in the <code>eventDate</code>,
+<code>decimalLongitude</code>, and <code>decimalLatitude</code> columns
+and also includes data not located within any of the <a href="https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/digital-boundary-files"><em>State
+and Territories - 2021</em></a> spatial boundaries provided by the
+Australian Bureau of Statistics (ABS). Further details of this process
+can be found in the <a href="https://github.com/johann-wagner/DS4B-final-project/tree/main/scripts">scripts
+folder</a> and <a href="https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/data_cleaning.Rmd">data_cleaning.Rmd</a>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">library</span>(readr)</span></code></pre></div>
+<pre><code>## Warning: package &#39;readr&#39; was built under R version 4.2.3</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div>
+<pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 4.2.3</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 4.2.3</code></pre>
+<pre><code>## Warning: package &#39;tibble&#39; was built under R version 4.2.3</code></pre>
+<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 4.2.3</code></pre>
+<pre><code>## Warning: package &#39;purrr&#39; was built under R version 4.2.3</code></pre>
+<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 4.2.3</code></pre>
+<pre><code>## Warning: package &#39;stringr&#39; was built under R version 4.2.3</code></pre>
+<pre><code>## Warning: package &#39;forcats&#39; was built under R version 4.2.3</code></pre>
+<pre><code>## Warning: package &#39;lubridate&#39; was built under R version 4.2.3</code></pre>
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.2     ✔ purrr     1.0.2
+## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+## ✔ ggplot2   3.4.3     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks galah::filter(), stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>excluded_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;processed_data/excluded_data.csv&quot;</span>)</span></code></pre></div>
+<pre><code>## Rows: 13109 Columns: 12
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr  (7): scientificName, taxonConceptID, recordID, dataResourceName, occurr...
+## dbl  (2): decimalLatitude, decimalLongitude
+## lgl  (1): state
+## dttm (1): eventDate
+## date (1): date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>tidied_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;processed_data/tidied_data.csv&quot;</span>)</span></code></pre></div>
+<pre><code>## Rows: 340942 Columns: 8
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr  (5): scientificName, taxonConceptID, recordID, dataResourceName, occurr...
+## dbl  (2): decimalLatitude, decimalLongitude
+## dttm (1): eventDate
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>cleaned_data <span class="ot">&lt;-</span> tidied_data <span class="sc">%&gt;%</span> </span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>  <span class="fu">anti_join</span>(</span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>    excluded_data,</span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>    <span class="fu">join_by</span>(recordID)</span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>  )</span>
+<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" tabindex="-1"></a></span>
+<span id="cb23-8"><a href="#cb23-8" tabindex="-1"></a></span>
+<span id="cb23-9"><a href="#cb23-9" tabindex="-1"></a><span class="co"># Save Cleaned Data -----------------------------------------------------------</span></span>
+<span id="cb23-10"><a href="#cb23-10" tabindex="-1"></a>cleaned_data <span class="sc">%&gt;%</span> </span>
+<span id="cb23-11"><a href="#cb23-11" tabindex="-1"></a>  <span class="fu">write_csv</span>(</span>
+<span id="cb23-12"><a href="#cb23-12" tabindex="-1"></a>      <span class="st">&quot;processed_data/cleaned_data.csv&quot;</span></span>
+<span id="cb23-13"><a href="#cb23-13" tabindex="-1"></a>  )</span></code></pre></div>
 </div>
 <div id="sanity-checks" class="section level1">
 <h1>Sanity checks</h1>
@@ -1634,7 +1843,8 @@ appropriate sub-headings.]</p>
 </ul>
 <p><a href="https://www.nature.com/articles/s41597-021-00981-0" class="uri">https://www.nature.com/articles/s41597-021-00981-0</a>), <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020EA001562" class="uri">https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020EA001562</a></p>
 <p><a href="https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf" class="uri">https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf</a>
-(DOI unavailable) <a href="https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html" class="uri">https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html</a></p>
+(DOI unavailable) <a href="https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html" class="uri">https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html</a>
+- <a href="https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/digital-boundary-files" class="uri">https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/digital-boundary-files</a></p>
 </div>
 
 
