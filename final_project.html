@@ -1516,11 +1516,65 @@ date of recording (<code>eventDate</code>) for each record.</p>
 </div>
 <div id="questionsaims" class="section level1">
 <h1>Questions/Aims</h1>
-<p>[A brief section which first states and then justifies the
-questions/aims of your EDA. Must provide evidence of independent
-research into what has been done before on these questions/aims. See
-above for examples.]</p>
-<p>START BROAD PREDATOR PREY</p>
+<div id="initial-aims" class="section level2">
+<h2>Initial Aims:</h2>
+<ol style="list-style-type: decimal">
+<li><p>Develop an RShiny app that showcases the spatial and temporal
+(monthly) occurrence of <del>the top 5-10</del> 7 invasive animal
+species in Australia by state/territory <del>and by regionality (urban
+vs. regional)</del></p></li>
+<li><p><del>Visualise and calculate the proportion of the selected
+invasive animal species observed in an urban area</del></p></li>
+<li><p>Create a download option for users to download the cleaned
+dataset for the selected invasive animal species for a particular
+state/territory</p></li>
+</ol>
+</div>
+<div id="justifications" class="section level2">
+<h2>Justifications:</h2>
+<p>Initially, I was interested in the spatial distribution of magpies in
+Canberra as I am an avid cyclist and wanted to find the hotspots of
+magpie records and linking/statistically modelling this data with a
+collaborative magpie swooping database called <a href="https://www.magpiealert.com/">magpiealert.com</a>. Unfortunately,
+the data was not available and the sampling bias of the occurrence data
+may not be truely representative, as observations are more likely to be
+near roads, airports, and major urban areas (<a href="https://labs.ala.org.au/posts/2022-07-22_sample-bias/post.html?panelset=mantids">Kellie,
+2022</a>).</p>
+<p>This made me interested in simply visualising the data spatially,
+instead of using any statistical methodologies and focusing the project
+on whether there would be major differences/patterns of occurrence
+records in urban vs. non-urban/regional areas. Unfortunately, given the
+scope of the project, calculating the urban vs. non-urban analysis would
+have been too much scope-creep, so this aim was ignored (maybe
+post-project exploration).</p>
+<p>Hughes et al. (<a href="https://onlinelibrary.wiley.com/doi/10.1111/ecog.05926">2021</a>)
+and Guerin et al. (<a href="https://doi.org/10.1371/journal.pone.0144779">2016</a>) highlight
+the spatial sampling bias associated with biodiversity data suggesting
+that these biases must first be understood before applying any
+statistical modelling methods. Interestingly, Australian research by
+Piccolo et al. (<a href="https://www.nature.com/articles/s41598-020-66719-x">2020</a>) show
+that reptile research locations are highly positively correlated with
+proximity to universities suggesting biodiversity research locations are
+closely associated by accessibility. Similarly, temporal biases can also
+influence results, as species distributions can change across time (<a href="https://doi.org/10.1371/journal.pbio.1000385">Boakes et al,
+2010</a>).</p>
+<p>The Atlas of Living Australia already have a browser-based spatial
+visualisation app, where a specific species can be selected and plotted
+on a map. However, there seemed to not be a functionality to compare
+both the spatial <em>and</em> temporal (by month) variables.</p>
+<p>This dashboard is the beginning data exploration step and in the
+essence of open and citizen-science, I wanted to make my cleaned data
+easily available through the dashboard. Data sharing allows for further
+analysis and reusability (<a href="https://www.nature.com/articles/s41597-021-00981-0">Tedersoo et
+al., 2021</a>, <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020EA001562">Ramachandran
+et al., 2021</a>). I wanted my dashboard to follow the FAIR Data
+Principles (<a href="https://www.nature.com/articles/sdata201618">Wilkinson et al.,
+2016</a>)</p>
+<p>I chose invasive animal species, because of the numerous rabbits I
+see whenever I go cycling in Canberra. The other 6 species were chosen
+arbitrary based off this <a href="https://www.nespthreatenedspecies.edu.au/news-and-media/media-releases/australia-s-10-worst-invasive-species-study">article</a>,
+which summarises the results from Kearney et al.’s paper (<a href="https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf">2018</a>)</p>
+</div>
 </div>
 <div id="raw-data" class="section level1">
 <h1>Raw data</h1>
@@ -1568,7 +1622,14 @@ appropriate sub-headings.]</p>
 <h1>References</h1>
 <ul>
 <li><a href="https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala" class="uri">https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala</a></li>
+<li><a href="https://onlinelibrary.wiley.com/doi/10.1111/ecog.05926" class="uri">https://onlinelibrary.wiley.com/doi/10.1111/ecog.05926</a></li>
+<li><a href="https://labs.ala.org.au/posts/2022-07-22_sample-bias/post.html?panelset=mantids" class="uri">https://labs.ala.org.au/posts/2022-07-22_sample-bias/post.html?panelset=mantids</a>
+<a href="https://doi.org/10.1371/journal.pone.0144779" class="uri">https://doi.org/10.1371/journal.pone.0144779</a></li>
+<li><a href="https://doi.org/10.1371/journal.pbio.1000385" class="uri">https://doi.org/10.1371/journal.pbio.1000385</a> <a href="https://www.nature.com/articles/s41598-020-66719-x" class="uri">https://www.nature.com/articles/s41598-020-66719-x</a> <a href="https://www.nature.com/articles/sdata201618" class="uri">https://www.nature.com/articles/sdata201618</a></li>
 </ul>
+<p><a href="https://www.nature.com/articles/s41597-021-00981-0" class="uri">https://www.nature.com/articles/s41597-021-00981-0</a>), <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020EA001562" class="uri">https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020EA001562</a></p>
+<p><a href="https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf" class="uri">https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf</a>
+(DOI unavailable)</p>
 </div>
 
 

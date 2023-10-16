@@ -29,48 +29,49 @@ of figures in your document. You can just count these]
 
 # Data Description
 
-The data used in this project is from The Atlas of Living Australia,
-which is "a collaborative, digital and open infrastructure repository
-that aggregates biodiversity data from multiple sources" ([ALA,
-2022](https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala)).
+The data used in this project is from The Atlas of Living Australia, which is "a collaborative, digital and open infrastructure repository that aggregates biodiversity data from multiple sources" ([ALA, 2022](https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala)).
 
-Specifically, this analysis uses species occurrence records for seven
-invasive animal species:
+Specifically, this analysis uses species occurrence records for seven invasive animal species:
 
-1.  [European Rabbits (Oryctolagus
-    cuniculus)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/692effa3-b719-495f-a86f-ce89e2981652)
+1.  [European Rabbits (Oryctolagus cuniculus)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/692effa3-b719-495f-a86f-ce89e2981652)
 
-2.  [European Red Foxes (Vulpes
-    vulpes)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/2869ce8a-8212-46c2-8327-dfb7fabb8296)
+2.  [European Red Foxes (Vulpes vulpes)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/2869ce8a-8212-46c2-8327-dfb7fabb8296)
 
-3.  [Cane Toads (Rhinella
-    marina)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/e79179f8-44bf-46eb-b139-a2e66f6045c1)
+3.  [Cane Toads (Rhinella marina)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/e79179f8-44bf-46eb-b139-a2e66f6045c1)
 
-4.  [Feral Cats (Felis
-    catus)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/7de6b16a-f854-4b4b-88cf-81868ce74ad8)
+4.  [Feral Cats (Felis catus)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/7de6b16a-f854-4b4b-88cf-81868ce74ad8)
 
-5.  [Feral Horses (Equus (Equus)
-    caballus)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/86b4395d-97a7-470d-b35b-306e01dfbab6)
+5.  [Feral Horses (Equus (Equus) caballus)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/86b4395d-97a7-470d-b35b-306e01dfbab6)
 
-6.  [Feral Pigs (Sus
-    scrofa)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/948d8ca1-62fc-4d03-a79d-4be2de837264)
+6.  [Feral Pigs (Sus scrofa)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/948d8ca1-62fc-4d03-a79d-4be2de837264)
 
-7.  [Red Imported Fire Ants (Solenopsis
-    invicta)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/5b3fe1c6-1c2c-4e20-819f-2e6d8fa3d332)
+7.  [Red Imported Fire Ants (Solenopsis invicta)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/5b3fe1c6-1c2c-4e20-819f-2e6d8fa3d332)
 
-I was interested in the spatial and temporal variables for all 7
-species, particularly the longitude and latitude values
-(`decimalLongitude` and `decimalLatitude`) and date of recording
-(`eventDate`) for each record.
+I was interested in the spatial and temporal variables for all 7 species, particularly the longitude and latitude values (`decimalLongitude` and `decimalLatitude`) and date of recording (`eventDate`) for each record.
 
 # Questions/Aims
 
-[A brief section which first states and then justifies the
-questions/aims of your EDA. Must provide evidence of independent
-research into what has been done before on these questions/aims. See
-above for examples.]
+## Initial Aims:
 
-START BROAD PREDATOR PREY
+1.   Develop an RShiny app that showcases the spatial and temporal (monthly) occurrence of ~~the top 5-10~~ 7 invasive animal species in Australia by state/territory ~~and by regionality (urban vs. regional)~~
+
+2.   ~~Visualise and calculate the proportion of the selected invasive animal species observed in an urban area~~
+
+3.   Create a download option for users to download the cleaned dataset for the selected invasive animal species for a particular state/territory
+
+## Justifications:
+
+Initially, I was interested in the spatial distribution of magpies in Canberra as I am an avid cyclist and wanted to find the hotspots of magpie records and linking/statistically modelling this data with a collaborative magpie swooping database called [magpiealert.com](https://www.magpiealert.com/). Unfortunately, the data was not available and the sampling bias of the occurrence data may not be truely representative, as observations are more likely to be near roads, airports, and major urban areas ([Kellie, 2022](https://labs.ala.org.au/posts/2022-07-22_sample-bias/post.html?panelset=mantids)).
+
+This made me interested in simply visualising the data spatially, instead of using any statistical methodologies and focusing the project on whether there would be major differences/patterns of occurrence records in urban vs. non-urban/regional areas. Unfortunately, given the scope of the project, calculating the urban vs. non-urban analysis would have been too much scope-creep, so this aim was ignored (maybe post-project exploration).
+
+Hughes et al. ([2021](https://onlinelibrary.wiley.com/doi/10.1111/ecog.05926)) and Guerin et al. ([2016](https://doi.org/10.1371/journal.pone.0144779)) highlight the spatial sampling bias associated with biodiversity data suggesting that these biases must first be understood before applying any statistical modelling methods. Interestingly, Australian research by Piccolo et al. ([2020](https://www.nature.com/articles/s41598-020-66719-x)) show that reptile research locations are highly positively correlated with proximity to universities suggesting biodiversity research locations are closely associated by accessibility. Similarly, temporal biases can also influence results, as species distributions can change across time ([Boakes et al, 2010](https://doi.org/10.1371/journal.pbio.1000385)).
+
+The Atlas of Living Australia already have a browser-based spatial visualisation app, where a specific species can be selected and plotted on a map. However, there seemed to not be a functionality to compare both the spatial _and_ temporal (by month) variables.
+
+This dashboard is the beginning data exploration step and in the essence of open and citizen-science, I wanted to make my cleaned data easily available through the dashboard. Data sharing allows for further analysis and reusability ([Tedersoo et al., 2021](https://www.nature.com/articles/s41597-021-00981-0), [Ramachandran et al., 2021](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020EA001562)). I wanted my dashboard to follow the FAIR Data Principles ([Wilkinson et al., 2016](https://www.nature.com/articles/sdata201618)).
+
+I chose invasive animal species, because of the numerous rabbits I see whenever I go cycling in Canberra. The other 6 species were chosen arbitrary based off this [article](https://www.nespthreatenedspecies.edu.au/news-and-media/media-releases/australia-s-10-worst-invasive-species-study), which summarises the results from Kearney et al.'s paper ([2018](https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf)).
 
 # Raw data
 
@@ -117,3 +118,13 @@ sub-headings.]
 # References
 
 -   <https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala>
+-   https://onlinelibrary.wiley.com/doi/10.1111/ecog.05926
+-   https://labs.ala.org.au/posts/2022-07-22_sample-bias/post.html?panelset=mantids
+https://doi.org/10.1371/journal.pone.0144779
+- https://doi.org/10.1371/journal.pbio.1000385
+https://www.nature.com/articles/s41598-020-66719-x
+https://www.nature.com/articles/sdata201618
+
+https://www.nature.com/articles/s41597-021-00981-0), https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020EA001562
+
+https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf (DOI unavailable)
