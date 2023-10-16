@@ -12,12 +12,16 @@ output:
         highlight: pygments
         fig_width: 8
         fig_height: 4
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 # Word/figure count
 
-Words: [The number of words in your document, calculated using the word_count() function at the end of this document]
-Figures: [The number of figures in your document. You can just count these]
+Words: [The number of words in your document, calculated using the
+word_count() function at the end of this document] Figures: [The number
+of figures in your document. You can just count these]
 
 # Location on GitHub
 
@@ -25,54 +29,91 @@ Figures: [The number of figures in your document. You can just count these]
 
 # Data Description
 
-[A brief (~100-200 words should be more than enough) description of the dataset, referencing any key publications that go with it]
+The data used in this project is from The Atlas of Living Australia,
+which is "a collaborative, digital and open infrastructure repository
+that aggregates biodiversity data from multiple sources" ([ALA,
+2022](https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala)).
+
+Specifically, this analysis uses species occurrence records for seven
+invasive animal species:
+
+1.  [European Rabbits (Oryctolagus
+    cuniculus)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/692effa3-b719-495f-a86f-ce89e2981652)
+
+2.  [European Red Foxes (Vulpes
+    vulpes)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/2869ce8a-8212-46c2-8327-dfb7fabb8296)
+
+3.  [Cane Toads (Rhinella
+    marina)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/e79179f8-44bf-46eb-b139-a2e66f6045c1)
+
+4.  [Feral Cats (Felis
+    catus)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/7de6b16a-f854-4b4b-88cf-81868ce74ad8)
+
+5.  [Feral Horses (Equus (Equus)
+    caballus)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/86b4395d-97a7-470d-b35b-306e01dfbab6)
+
+6.  [Feral Pigs (Sus
+    scrofa)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/948d8ca1-62fc-4d03-a79d-4be2de837264)
+
+7.  [Red Imported Fire Ants (Solenopsis
+    invicta)](https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/5b3fe1c6-1c2c-4e20-819f-2e6d8fa3d332)
+
+I was interested in the spatial and temporal variables for all 7
+species, particularly the longitude and latitude values
+(`decimalLongitude` and `decimalLatitude`) and date of recording
+(`eventDate`) for each record.
 
 # Questions/Aims
 
-[A brief section which first states and then justifies the questions/aims of your EDA. Must provide evidence of independent research into what has been done before on these questions/aims. See above for examples.]
+[A brief section which first states and then justifies the
+questions/aims of your EDA. Must provide evidence of independent
+research into what has been done before on these questions/aims. See
+above for examples.]
 
 START BROAD PREDATOR PREY
 
 # Raw data
 
-[Explains how and where to get the exact raw data you got]
-[Is reproducible by a person (required) and a machine (ideally)]
+[Explains how and where to get the exact raw data you got] [Is
+reproducible by a person (required) and a machine (ideally)]
 
-2. In your main .Rmd file make a Raw Data section
-3. Write down in that how to get the raw data
-• Note the DOI or URL for the data
-• Give details of exactly which file(s) someone needs to download so that they could recreate
-your raw_data folder
+2.  In your main .Rmd file make a Raw Data section
+3.  Write down in that how to get the raw data • Note the DOI or URL for
+    the data • Give details of exactly which file(s) someone needs to
+    download so that they could recreate your raw_data folder
 
 # Data wrangling
 
-[R chunks and prose which:]
-[Tidies up your raw data, outputs tidied_data.csv]
-[Cleans up your tidied data, outputs cleaned_data.csv]
+[R chunks and prose which:] [Tidies up your raw data, outputs
+tidied_data.csv] [Cleans up your tidied data, outputs cleaned_data.csv]
 
-• loads in your excluded_data.csv file
-• loads in your tidied_data.csv file
-• removes the appropriate data from tidied_data.csv based on excluded_data.csv
-• saves a new file called cleaned_data.csv
+• loads in your excluded_data.csv file • loads in your tidied_data.csv
+file • removes the appropriate data from tidied_data.csv based on
+excluded_data.csv • saves a new file called cleaned_data.csv
 
 # Sanity checks
 
 [R chunks and prose which perform sanity checks on your cleaned data]
-[Remember that this really just summarises that your data are OK after you've cleaned them]
-[Most of the real sanity checks and data cleaning go on in the data_cleaning.Rmd file]
+[Remember that this really just summarises that your data are OK after
+you've cleaned them] [Most of the real sanity checks and data cleaning
+go on in the data_cleaning.Rmd file]
 
-• Include enough sanity checks to convince yourself (and whoever will be grading your work) that your data are clean
-enough for your particular purposes
-• You will never find and remove all errors, but you must be reasonably sure that you have found any errors which might
-affect your conclusions
+• Include enough sanity checks to convince yourself (and whoever will be
+grading your work) that your data are clean enough for your particular
+purposes • You will never find and remove all errors, but you must be
+reasonably sure that you have found any errors which might affect your
+conclusions
 
 # Addressing the questions/aims
 
 FINISH BROAD
 
-[This is the *main* section of your work. For example, if you are doing an EDA, this is where you would summarise it. If you are building something like a package or shiny app, a description of that package / app and demonstration of its function(s) would go here. Use appropriate sub-headings.]
-
+[This is the *main* section of your work. For example, if you are doing
+an EDA, this is where you would summarise it. If you are building
+something like a package or shiny app, a description of that package /
+app and demonstration of its function(s) would go here. Use appropriate
+sub-headings.]
 
 # References
 
-[References you have cited throughout your text]
+-   <https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala>

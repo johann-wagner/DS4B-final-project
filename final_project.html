@@ -1487,8 +1487,32 @@ of figures in your document. You can just count these]</p>
 </div>
 <div id="data-description" class="section level1">
 <h1>Data Description</h1>
-<p>[A brief (~100-200 words should be more than enough) description of
-the dataset, referencing any key publications that go with it]</p>
+<p>The data used in this project is from The Atlas of Living Australia,
+which is “a collaborative, digital and open infrastructure repository
+that aggregates biodiversity data from multiple sources” (<a href="https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala">ALA,
+2022</a>).</p>
+<p>Specifically, this analysis uses species occurrence records for seven
+invasive animal species:</p>
+<ol style="list-style-type: decimal">
+<li><p><a href="https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/692effa3-b719-495f-a86f-ce89e2981652">European
+Rabbits (Oryctolagus cuniculus)</a></p></li>
+<li><p><a href="https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/2869ce8a-8212-46c2-8327-dfb7fabb8296">European
+Red Foxes (Vulpes vulpes)</a></p></li>
+<li><p><a href="https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/e79179f8-44bf-46eb-b139-a2e66f6045c1">Cane
+Toads (Rhinella marina)</a></p></li>
+<li><p><a href="https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/7de6b16a-f854-4b4b-88cf-81868ce74ad8">Feral
+Cats (Felis catus)</a></p></li>
+<li><p><a href="https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/86b4395d-97a7-470d-b35b-306e01dfbab6">Feral
+Horses (Equus (Equus) caballus)</a></p></li>
+<li><p><a href="https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/948d8ca1-62fc-4d03-a79d-4be2de837264">Feral
+Pigs (Sus scrofa)</a></p></li>
+<li><p><a href="https://bie.ala.org.au/species/https://biodiversity.org.au/afd/taxa/5b3fe1c6-1c2c-4e20-819f-2e6d8fa3d332">Red
+Imported Fire Ants (Solenopsis invicta)</a></p></li>
+</ol>
+<p>I was interested in the spatial and temporal variables for all 7
+species, particularly the longitude and latitude values
+(<code>decimalLongitude</code> and <code>decimalLatitude</code>) and
+date of recording (<code>eventDate</code>) for each record.</p>
 </div>
 <div id="questionsaims" class="section level1">
 <h1>Questions/Aims</h1>
@@ -1496,17 +1520,28 @@ the dataset, referencing any key publications that go with it]</p>
 questions/aims of your EDA. Must provide evidence of independent
 research into what has been done before on these questions/aims. See
 above for examples.]</p>
+<p>START BROAD PREDATOR PREY</p>
 </div>
 <div id="raw-data" class="section level1">
 <h1>Raw data</h1>
 <p>[Explains how and where to get the exact raw data you got] [Is
 reproducible by a person (required) and a machine (ideally)]</p>
+<ol start="2" style="list-style-type: decimal">
+<li>In your main .Rmd file make a Raw Data section</li>
+<li>Write down in that how to get the raw data • Note the DOI or URL for
+the data • Give details of exactly which file(s) someone needs to
+download so that they could recreate your raw_data folder</li>
+</ol>
 </div>
 <div id="data-wrangling" class="section level1">
 <h1>Data wrangling</h1>
 <p>[R chunks and prose which:] [Tidies up your raw data, outputs
 tidied_data.csv] [Cleans up your tidied data, outputs
 cleaned_data.csv]</p>
+<p>• loads in your excluded_data.csv file • loads in your
+tidied_data.csv file • removes the appropriate data from tidied_data.csv
+based on excluded_data.csv • saves a new file called
+cleaned_data.csv</p>
 </div>
 <div id="sanity-checks" class="section level1">
 <h1>Sanity checks</h1>
@@ -1514,9 +1549,15 @@ cleaned_data.csv]</p>
 [Remember that this really just summarises that your data are OK after
 you’ve cleaned them] [Most of the real sanity checks and data cleaning
 go on in the data_cleaning.Rmd file]</p>
+<p>• Include enough sanity checks to convince yourself (and whoever will
+be grading your work) that your data are clean enough for your
+particular purposes • You will never find and remove all errors, but you
+must be reasonably sure that you have found any errors which might
+affect your conclusions</p>
 </div>
 <div id="addressing-the-questionsaims" class="section level1">
 <h1>Addressing the questions/aims</h1>
+<p>FINISH BROAD</p>
 <p>[This is the <em>main</em> section of your work. For example, if you
 are doing an EDA, this is where you would summarise it. If you are
 building something like a package or shiny app, a description of that
@@ -1525,7 +1566,9 @@ appropriate sub-headings.]</p>
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>
-<p>[References you have cited throughout your text]</p>
+<ul>
+<li><a href="https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala" class="uri">https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala</a></li>
+</ul>
 </div>
 
 
