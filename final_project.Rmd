@@ -73,6 +73,10 @@ This dashboard is the beginning data exploration step and in the essence of open
 
 I chose invasive animal species, because of the numerous rabbits I see whenever I go cycling in Canberra. The other 6 species were chosen arbitrary based off this [article](https://www.nespthreatenedspecies.edu.au/news-and-media/media-releases/australia-s-10-worst-invasive-species-study), which summarises the results from Kearney et al.'s paper ([2018](https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf)).
 
+A deeper understanding of my thought process is documented in GitHub Issue [`#4`](https://github.com/johann-wagner/DS4B-final-project/issues/4).
+
+The analysis was based off this [ALALabs article](https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html) ([Smith et al., 2023](https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html)).
+
 # Raw data
 
 [Explains how and where to get the exact raw data you got] [Is
@@ -128,3 +132,4 @@ https://www.nature.com/articles/sdata201618
 https://www.nature.com/articles/s41597-021-00981-0), https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020EA001562
 
 https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf (DOI unavailable)
+https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
