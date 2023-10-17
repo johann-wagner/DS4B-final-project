@@ -47,7 +47,7 @@ function(input, output, session) {
 
 
 
-    # Create captial cities ---------------------------------------------------
+    # Create capital cities ---------------------------------------------------
     # Ref [4]: Plot onto map
     capital_cities_data <- tibble::tribble(
       ~state,                         ~city,       ~lat,     ~lon,
