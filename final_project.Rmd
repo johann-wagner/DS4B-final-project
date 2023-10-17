@@ -1,7 +1,7 @@
 ---
-title: "A title for your project"
+title: "Invasive Animal Species Dashboard"
 author: "Johann Wagner - u6958957"
-date: "2023-10-02"
+date: "2023-10-17"
 output:  
     html_document:
         toc: true
@@ -19,8 +19,9 @@ editor_options:
 
 # Word/figure count
 
-Words: [The number of words in your document, calculated using the word_count() function at the end of this document]
-Figures: [The number of figures in your document. You can just count these]
+Words: 1998 words
+
+Figures: 3
 
 # Location on GitHub
 
@@ -60,46 +61,46 @@ I was interested in the spatial and temporal variables for all 7 species, partic
 
 ## Justifications:
 
-Initially, I was interested in the spatial distribution of magpies in Canberra as I am an avid cyclist and wanted to find the hotspots of magpie records and linking/statistically modelling this data with a collaborative magpie swooping database called [magpiealert.com](https://www.magpiealert.com/). Unfortunately, the data was not available and the sampling bias of the occurrence data may not be truely representative, as observations are more likely to be near roads, airports, and major urban areas ([Kellie, 2022](https://labs.ala.org.au/posts/2022-07-22_sample-bias/post.html?panelset=mantids)).
+Initially, I was interested in the spatial distribution of magpies in Canberra as I am an avid cyclist and wanted to find the hotspots of magpie records and linking/statistically model this data with a collaborative magpie swooping database called [magpiealert.com](https://www.magpiealert.com/). Unfortunately, the data was not available and the sampling bias of the occurrence data may not be truly representative, as observations are more likely to be near roads, airports, and major urban areas ([Kellie, 2022](https://labs.ala.org.au/posts/2022-07-22_sample-bias/post.html?panelset=mantids)).
 
 This made me interested in simply visualising the data spatially, instead of using any statistical methodologies and focusing the project on whether there would be major differences/patterns of occurrence records in urban vs. non-urban/regional areas. Unfortunately, given the scope of the project, calculating the urban vs. non-urban analysis would have been too much scope-creep, so this aim was ignored (maybe post-project exploration).
 
 Hughes et al. ([2021](https://onlinelibrary.wiley.com/doi/10.1111/ecog.05926)) and Guerin et al. ([2016](https://doi.org/10.1371/journal.pone.0144779)) highlight the spatial sampling bias associated with biodiversity data suggesting that these biases must first be understood before applying any statistical modelling methods. Interestingly, Australian research by Piccolo et al. ([2020](https://www.nature.com/articles/s41598-020-66719-x)) show that reptile research locations are highly positively correlated with proximity to universities suggesting biodiversity research locations are closely associated by accessibility. Similarly, temporal biases can also influence results, as species distributions can change across time ([Boakes et al, 2010](https://doi.org/10.1371/journal.pbio.1000385)).
 
-The Atlas of Living Australia already have a browser-based spatial visualisation tool, where a specific species can be selected and plotted on a map. However, there seemed to not be a functionality to compare both the spatial _and_ temporal (by month) variables.
+The Atlas of Living Australia already have a browser-based spatial visualisation tool, where a specific species can be selected and plotted on a map. However, there seemed to not be a functionality to comparing both the spatial _and_ temporal (by month) variables.
 
-This dashboard is the beginning data exploration step and in the essence of open and citizen-science, I wanted to make my cleaned data easily available through the dashboard. Data sharing allows for further analysis and reusability ([Tedersoo et al., 2021](https://www.nature.com/articles/s41597-021-00981-0), [Ramachandran et al., 2021](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020EA001562)). I wanted my dashboard to follow the FAIR Data Principles ([Wilkinson et al., 2016](https://www.nature.com/articles/sdata201618)).
+This dashboard is the initial step in data exploration step and in the essence of open and citizen-science, I wanted to make my cleaned data easily available through the dashboard. Data sharing enables for further analysis and reusability ([Tedersoo et al., 2021](https://www.nature.com/articles/s41597-021-00981-0), [Ramachandran et al., 2021](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020EA001562)). I wanted my dashboard to follow the FAIR Data Principles ([Wilkinson et al., 2016](https://www.nature.com/articles/sdata201618)).
 
-I chose invasive animal species, because of the numerous rabbits I see whenever I go cycling in Canberra. The other 6 species were chosen arbitrary based off this [article](https://www.nespthreatenedspecies.edu.au/news-and-media/media-releases/australia-s-10-worst-invasive-species-study), which summarises the results from Kearney et al.'s paper ([2018](https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf)).
+I chose invasive animal species, because of the rabbits I see when cycling in Canberra. The other 6 species were chosen arbitrarily based off this [article](https://www.nespthreatenedspecies.edu.au/news-and-media/media-releases/australia-s-10-worst-invasive-species-study), which summarises the results from Kearney et al.'s paper ([2018](https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf)).
 
 A deeper understanding of my thought process is documented in GitHub Issue [`#4`](https://github.com/johann-wagner/DS4B-final-project/issues/4).
 
-The analysis was based off this [ALALabs article](https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html) ([Smith et al., 2023](https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html)).
+The analysis was based on this [ALALabs article](https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html) ([Smith et al., 2023](https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html)).
 
 # Raw data
 
 The raw data is available using the `galah` package. A user must use an ALA-registered email at [ala.org.au](ala.org.au) and use the `galah_config()` function. Once completed, the custom-function `load_galah_occurrence_data()` was used, where the input argument `species_name` was the aforementioned scientific names of the seven species.
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 ### Purpose:
-# To load the species occurrence data of any given species within the Atlas
-# of Living Australia database.
+# To load the occurrence data of any species within the Atlas
+# of Living Australia.
 suppressPackageStartupMessages({
   library(galah)
 })
 galah_config(email = "johann.wagner@gmail.com")
 
 load_galah_occurrence_data <- function(
-  # character string of scientific name of species
+  # scientific name
   species_name
 ) {
   species_occurrence <- galah_call() |>
     
     # To conduct a search for species scientific name
-    galah_identify(species_name) |> # Ref [1]
+    galah_identify(species_name) |>
     
     # Pre-applied filter to ensure quality-assured data
-    # the "ALA" profile is designed to exclude lower quality records Ref [2]
+    # the "ALA" profile is designed to exclude lower quality records
     galah_apply_profile(ALA) |> 
     atlas_occurrences(mint_doi = TRUE)
   
@@ -133,7 +134,7 @@ The DOIs for each species:
 
 Because the data is already in tidy format, the seven datasets are binded into one `tidied_data.csv`, then filtered with `excluded_data.csv`. The excluded data includes any `NA` values in the `eventDate`, `decimalLongitude`, and `decimalLatitude` columns and also includes data not located within any of the [*State and Territories - 2021*](https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/digital-boundary-files) spatial boundaries provided by the Australian Bureau of Statistics (ABS). Further details of this process can be found in the [scripts folder](https://github.com/johann-wagner/DS4B-final-project/tree/main/scripts) and [data_cleaning.Rmd](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/data_cleaning.Rmd).
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 suppressPackageStartupMessages({
   library(readr)
   library(tidyverse)
@@ -153,7 +154,7 @@ cleaned_data <- tidied_data %>%
 
 Let's use `skim()` to do some sanity checks.
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 suppressPackageStartupMessages({
   library(skimr)
 })
@@ -164,7 +165,7 @@ There are 328,342 records with the same number of unique values in the `recordID
 
 Let's spatially showcase the data.
 
-```{r}
+```{r, warning = FALSE, message = FALSE, fig.width = 7.5, fig.height = 10}
 suppressPackageStartupMessages({
   options(timeout = 1000)
   devtools::install_github("wfmackey/absmapsdata")
@@ -178,7 +179,6 @@ state2021 %>%
   filter(!state_code_2021 %in% c("9", "Z")) %>% 
   ggplot() +
   
-  # Ref [1]: Create background polygon of the ACT
   geom_sf(
     aes(geometry = geometry)
   ) +
@@ -204,24 +204,185 @@ Interestingly, it seems that there are a few observations that are to the east o
 
 # Addressing the questions/aims
 
-[This is the *main* section of your work. For example, if you are doing
-an EDA, this is where you would summarise it. If you are building
-something like a package or shiny app, a description of that package /
-app and demonstration of its function(s) would go here. Use appropriate
-sub-headings.]
+## Aim 1: Dashboard and Visualisations
+
+### Folder System
+The RShiny app can be found in the GitHub folder [*DS4B-final-project/invasive_species_dashboard*](https://github.com/johann-wagner/DS4B-final-project/tree/main/invasive_species_dashboard). Similar to R Project environments, the RShiny app is all self-contained in this folder. The individual R scripts in the [*DS4B-final-project/scripts*](https://github.com/johann-wagner/DS4B-final-project/tree/main/scripts) folder must be run first to produce and save the dashboard data within the RShiny folder for most recent data.
+
+### The RShiny App
+The RShiny folder contains four files:
+
+-   *0-00_setup_and_configuration.R:* loads relevant packages and custom-made functions to create the analysis/visualisations/RShiny.
+
+-   *dashboard_data.csv:* is the cleaned occurrence data for the seven invasive species, including spatial and temporal variables.
+
+-   *server.R* contains the back-end logic/code that takes the two inputs to dynamically create/adjust the visualisations/titles/downloads.
+
+-   *ui.R* contains the front-end user-interface design and layout of the app.
+
+### Spatial Visualisation: European Rabbits in ACT
+
+Let's create the spatial visualisation using European Rabbits and ACT as the inputs.
+
+```{r, warning = FALSE, message = FALSE}
+library(scales)
+species_simple_name <- "European Rabbits"
+state_name <- "Australian Capital Territory"
+
+
+dashboard_data <- read_csv("processed_data/dashboard_data.csv")
+
+spatial_data <- dashboard_data %>%
+  filter(
+    simpleName == species_simple_name,
+    state      == state_name
+  )
+
+
+
+capital_cities_data <- tibble::tribble(
+  ~state,                         ~city,       ~lat,     ~lon,
+  "Australian Capital Territory", "Canberra",  -35.2809, 149.1300,
+) %>%
+  filter(state == state_name)
+
+
+
+state2021 %>%
+
+  filter(state_name_2021 == state_name) %>%
+  ggplot() +
+
+  geom_sf(
+    aes(geometry = geometry),
+    fill = "#E5E4E2"
+  ) +
+  geom_point(
+    data = spatial_data,
+    aes(
+      x = decimalLongitude,
+      y = decimalLatitude,
+      size = simpleName
+    ),
+    alpha = 0.6,
+    colour = "#1b9e77"
+  ) +
+  geom_point(
+    data = capital_cities_data,
+    aes(
+      x = lon,
+      y = lat,
+      shape = city
+    ),
+    colour = "#d95f02",
+    size = 4
+  ) +
+  coord_sf() +
+
+  theme_minimal() +
+
+  # Ref [1]
+  labs(
+    title = bquote(
+        "There are" ~
+            bold(.({
+                spatial_data %>%
+                    nrow() %>%
+                    comma()
+            })) ~
+            "records of" ~
+            bold(.(species_simple_name)) ~
+            "in" ~
+            bold(.(state_name))
+    ),
+    shape = "Capital City",
+    size = "Invasive Species"
+  ) +
+  theme(
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank(),
+    panel.grid = element_blank(),
+
+    plot.title = element_text(size = 13),
+
+    # Ref [2]: Improve readability
+    legend.text = element_text(size = 12),
+    legend.title = element_text(
+      size = 12,
+      face = "bold"
+    ),
+    legend.direction = "vertical",
+    legend.background = element_rect(
+      fill = "#E5E4E2",
+      colour = "#708090"
+    ),
+    legend.position = "right",
+    legend.justification = c("right", "bottom"),
+    legend.box.just = "right",
+    legend.margin = margin(6, 6, 6, 6),
+
+    panel.background = element_rect(fill = "transparent", colour = "transparent")
+  )
+
+
+
+# References:
+# 1: https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
+# 2: https://r-graph-gallery.com/239-custom-layout-legend-ggplot2.html
+```
+
+Each green point represents one record. We can see that the majority of records are near Canberra with some patterns in Namadgi National Park, like Boboyan Road. Let's visualise some more maps.
+
+### Temporal Visualisation
+
+The aim of creating a circular monthly bar plot of record proportions was to explore potential temporal patterns. This plot suggests two things:
+
+1.   The time frequency when citizen scientists submit data and/or when professional/government teams measure/monitor invasive species. Maybe, annual monitoring occurs in May?
+
+2.   The actual temporal species distribution. For example, maybe there are more cats in May in SA, because of reproduction behaviour?
+
+Let's create it for Feral Cats in SA (a screenshot was used, due to word count limitations: please see GitHub repo for details)
+
+![Temporal Feral Cats in SA](screenshots/temporal_feral_cats_south_australia.png)
+
+## Aim 2: Regionality
+
+This aim was completely abandoned, because of the scope of the project was getting too big. However, adding the capital city point highlights how majority of the selected species cluster around the capital city. Additionally, a zoom function was added to the Shiny app for users to zoom into specific patterns and areas of interest.
+
+## Aim 3: Data Download
+
+Ensuring the data followed FAIR principles included making the data findable, such as referencing the DOIs on the dashboard. The user can select the two inputs they are interested in and can download the respective csv. The option to download the entire dashboard dataset is also available.
+
+## GitHub Use / Final RShiny App
+
+-   Final UI and visualisation design improvements were made using GitHub Issues to manage these efforts.
+-   GitHub branching was used for each Issue.
+-   GitHub Releases were used to distinguish major developments of the RShiny App.
+
+Please see the *README.md* file for more information.
+
+![Invasive Animal Species Dashboard (Version 1.0.0)](screenshots/dashboard_photo.png)
 
 # References
 
--   <https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala>
--   https://onlinelibrary.wiley.com/doi/10.1111/ecog.05926
--   https://labs.ala.org.au/posts/2022-07-22_sample-bias/post.html?panelset=mantids
-https://doi.org/10.1371/journal.pone.0144779
-- https://doi.org/10.1371/journal.pbio.1000385
-https://www.nature.com/articles/s41598-020-66719-x
-https://www.nature.com/articles/sdata201618
+Atlas of Living Australia website at http://www.ala.org.au. Accessed 8 June 2022. 
+Hughes AC, Orr MC, Ma K, Costello MJ, Waller J, Provoost P, Yang Q, Zhu C, Qiao H (2021). Sampling biases shape our view of the natural world. *Ecography*. pp. 1259-1269. <https://doi.org/10.1111/ecog.05926>
 
-https://www.nature.com/articles/s41597-021-00981-0), https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020EA001562
+Boakes EH, McGowan PJK, Fuller RA, Chang-qing D, Clark NE, O'Connor K, et al. (2010) Distorted Views of Biodiversity: Spatial and Temporal Bias in Species Occurrence Data. *PLoS Biol* 8(6): e1000385. https://doi.org/10.1371/journal.pbio.1000385
 
-https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf (DOI unavailable)
-https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
-- https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/digital-boundary-files
+Guerin GR, Biffin E, Baruch Z, Lowe AJ (2016). Identifying Centres of Plant Biodiversity in South Australia. *PLoS ONE* 11(1): e0144779. https://doi.org/10.1371/journal.pone.0144779
+
+Kearney SG, Carwardine J, Reside AE et al. (2018). The threats to Australia’s imperilled species and implications for a national conservation response. *CSIRO*. <https://www.nespthreatenedspecies.edu.au/media/qile4abf/kearney-et-al-2018_the-threats-to-aus-species_postprint.pdf>.
+
+Kellie D (2022). Quantify geographic sampling bias with sampbias. *ALA Labs*. <https://labs.ala.org.au/posts/2022-07-22_sample-bias/post.html?panelset=mantids>
+
+Ramachandran R, Bugbee K, & Murphy K (2021). From open data to open science. Earth and Space Science, 8, e2020EA001562. https://doi.org/10.1029/2020EA001562
+
+Smith A, Torresan O, Kellie D (2023). An exploration of dingo observations in the ALA. *ALA Labs*. <https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html>.
+
+Tedersoo L, Küngas R, Oras E et al. Data sharing practices and data availability upon request differ across scientific disciplines. *Sci Data* 8, 192 (2021). https://doi.org/10.1038/s41597-021-00981-0
+
+Piccolo RL, Warnken J, Chauvenet ALM. et al. Location biases in ecological research on Australian terrestrial reptiles. *Sci Rep* 10, 9691 (2020). https://doi.org/10.1038/s41598-020-66719-x
+
+Wilkinson M, Dumontier M, Aalbersberg I et al. The FAIR Guiding Principles for scientific data management and stewardship. *Sci Data* 3, 160018 (2016). https://doi.org/10.1038/sdata.2016.18
