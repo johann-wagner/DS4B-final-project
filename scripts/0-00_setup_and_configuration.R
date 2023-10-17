@@ -93,9 +93,29 @@ library(ggspatial)
 
 ### RShiny ------------------------------------------------------------------
 
+# To easily build interactive web applications with R
+### https://shiny.posit.co/
+library(shiny)
+
 # To easily publish your Shiny apps
 ### https://rstudio.github.io/rsconnect/
 library(rsconnect)
+
+# To easily display R data objects as tables on HTML pages
+### https://rstudio.github.io/DT/
+library(DT)
+
+# To easily apply themes to RShiny Apps
+### https://github.com/rstudio/shinythemes
+library(shinythemes)
+
+# To easily provide modern customizable UI themes and dashboards
+### https://rstudio.github.io/bslib/
+library(bslib)
+
+# To simplify themeing both RShiny UI and ggplot2 outputs
+### https://rstudio.github.io/thematic/
+library(thematic)
 
 
 
