@@ -35,17 +35,16 @@ fluidPage(
   # Introduction Panel
   fluidRow(
     column(
-      6,
+      12,
       wellPanel(
-        h2(strong("Invasive Species Dashboard"))
+        h2(strong("Invasive Species Dashboard")),
+        p(
+          "This RShiny App Dashboard creates two visualisations (spatial and temporal) for seven invasive animal species in Australia.",
+          "You can select one of the seven animal species and one of the eight state/territory values to change the visualisation outputs."
+          ),
+        p("More information on the development of this App can be found on the GitHub Repository: https://github.com/johann-wagner/DS4B-final-project")
       )
     ),
-    column(
-      6,
-      wellPanel(
-        h3("GitHub Repository")
-      )
-    )
   ),
 
   # Sidebar with a select input for species and state
@@ -113,6 +112,16 @@ fluidPage(
       br(),
       br(),
       h4(strong("Sources:")),
+      p("The DOIs for each species:"),
+      p("1.  European Rabbits (https://doi.org/10.26197/ala.d0da2524-838a-4540-a160-fba8088f4850)"),
+      p("2.  European Red Foxes (https://doi.org/10.26197/ala.5f700174-e92e-4376-a243-be05ffa93f46)"),
+      p("3.  Cane Toads (https://doi.org/10.26197/ala.d6d70c2c-00de-4f76-8ea6-598b9562eb64)"),
+      p("4.  Feral Cats (https://doi.org/10.26197/ala.57a58cdc-88c0-45c1-9260-bd17c6fc4b62)"),
+      p("5.  Feral Horses (https://doi.org/10.26197/ala.c3cebb21-c2e0-41d0-8b5d-f446c2914827)"),
+      p("6.  Feral Pigs (https://doi.org/10.26197/ala.952aa727-1915-4c3f-8399-ed940c24bfef)"),
+      p("7.  Red Imported Fire Ants (https://doi.org/10.26197/ala.74b5dd29-4287-473d-8391-9184c8c62554)")
+        
+        
     ),
 
     # Main Panel
