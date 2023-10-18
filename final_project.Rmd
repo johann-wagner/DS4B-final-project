@@ -366,7 +366,8 @@ Please see the *README.md* file for more information.
 
 # References
 
-Atlas of Living Australia website at http://www.ala.org.au. Accessed 8 June 2022. 
+Atlas of Living Australia website at http://www.ala.org.au. Accessed 18 October 2023.
+
 Hughes AC, Orr MC, Ma K, Costello MJ, Waller J, Provoost P, Yang Q, Zhu C, Qiao H (2021). Sampling biases shape our view of the natural world. *Ecography*. pp. 1259-1269. <https://doi.org/10.1111/ecog.05926>
 
 Boakes EH, McGowan PJK, Fuller RA, Chang-qing D, Clark NE, O'Connor K, et al. (2010) Distorted Views of Biodiversity: Spatial and Temporal Bias in Species Occurrence Data. *PLoS Biol* 8(6): e1000385. https://doi.org/10.1371/journal.pbio.1000385
@@ -377,7 +378,7 @@ Kearney SG, Carwardine J, Reside AE et al. (2018). The threats to Australia’s 
 
 Kellie D (2022). Quantify geographic sampling bias with sampbias. *ALA Labs*. <https://labs.ala.org.au/posts/2022-07-22_sample-bias/post.html?panelset=mantids>
 
-Ramachandran R, Bugbee K, & Murphy K (2021). From open data to open science. Earth and Space Science, 8, e2020EA001562. https://doi.org/10.1029/2020EA001562
+Ramachandran R, Bugbee K, & Murphy K (2021). From open data to open science. *Earth and Space Science*, 8, e2020EA001562. https://doi.org/10.1029/2020EA001562
 
 Smith A, Torresan O, Kellie D (2023). An exploration of dingo observations in the ALA. *ALA Labs*. <https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html>.
 
