@@ -184,7 +184,11 @@ fluidPage(
             h3("Temporal Visualisation"),
             h4(strong("Description")),
             p(
-              "The below visualisation temporally showcases the proportion of records for the selected invasive animal in the selected state/territory by month.",
+              "The below visualisation temporally showcases the proportion of records for the selected invasive",
+              strong("species"),
+              "in the selected",
+              strong("state/territory"),
+              "by month.",
               "Each coloured bar represents the proportion of records in that specific month with colour showing the relative magnitudes of the proportions."
             ),
             p("- A brighter, yellow colour indicates a relatively higher proportion."),
