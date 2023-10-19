@@ -17,7 +17,6 @@
 # was recorded in based on the spatial longitude and latitude data.
 
 create_state_column <- function(species_all_states_clean_input) {
-  
   # Make sure both your tibble and shapefile have the same coordinate reference
   # system (CRS)
   species_all_states_clean_sf <- st_as_sf(
@@ -25,7 +24,7 @@ create_state_column <- function(species_all_states_clean_input) {
     coords = c("decimalLongitude", "decimalLatitude"),
     crs = st_crs(state2021)
   )
-  
+
   # Create a vector of state/territory names
   state_names <- c(
     "New South Wales",
@@ -37,27 +36,30 @@ create_state_column <- function(species_all_states_clean_input) {
     "Northern Territory",
     "Australian Capital Territory"
   )
-  
+
   # Initialise empty list
   species_all_states_clean_list <- list()
-  
+
   # Ref [3]: Create a separate tibble for all points within each state and
   # put in list
   for (state_name in state_names) {
-    species_state_clean <- species_all_states_clean_sf %>% 
-      st_filter({state2021 %>% filter(state_name_2021 == state_name)}) %>% 
-      mutate(state = state_name) %>% 
+    species_state_clean <- species_all_states_clean_sf %>%
+      st_filter({
+        state2021 %>% filter(state_name_2021 == state_name)
+      }) %>%
+      mutate(state = state_name) %>%
       as_tibble()
-    
+
     species_all_states_clean_list[[state_name]] <- species_state_clean
   }
-  
+
   # Bind all 8 tibbles back into one big tibble
-  species_all_states_clean_output <- species_all_states_clean_input %>% 
-    
+  species_all_states_clean_output <- species_all_states_clean_input %>%
     # Join the new columns (geometry, state) to the input tibble
     left_join(
-      {bind_rows(species_all_states_clean_list)},
+      {
+        bind_rows(species_all_states_clean_list)
+      },
       join_by(
         eventDate,
         scientificName,
@@ -66,10 +68,9 @@ create_state_column <- function(species_all_states_clean_input) {
         dataResourceName,
         occurrenceStatus
       )
-    ) %>% 
-    
+    ) %>%
     mutate(
-      state = state %>% 
+      state = state %>%
         factor(
           levels = c(
             "New South Wales",
@@ -80,10 +81,10 @@ create_state_column <- function(species_all_states_clean_input) {
             "Tasmania",
             "Northern Territory",
             "Australian Capital Territory"
-            )
+          )
         )
     )
-  
+
   return(species_all_states_clean_output)
 }
 
