@@ -3,6 +3,12 @@
 ## Purpose
 This is a repository to store the R Codebase used to produce the Final Project for DS4B 2023. The details of the Assignment instructions are further down this README.md file.
 
+## Project Management using GitHub
+-   GitHub Issues were used to manage and implement new features and documentation.
+-   GitHub Branching was used for most major Issues (see ##Branch History below).
+-   GitHub Releases were used to distinguish major developments of the RShiny App.
+-   GitHub Projects and Milestones were used to manage work timelines [Data Science for Biologists (DS4B)](https://github.com/users/johann-wagner/projects/2)
+
 ## Repository Content
 
 ...
