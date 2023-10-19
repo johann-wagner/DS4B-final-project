@@ -702,7 +702,12 @@ function(input, output, session) {
 
   output$download_filtered_data <- downloadHandler(
     filename = function() {
-      "filtered_dashboard_data.csv"
+      paste0(
+        str_replace(str_to_lower(species_simple_name), " ", "_"),
+        "_",
+        str_replace(str_to_lower(state_name), " ", "_"),
+        ".csv"
+      )
     },
     content = function(file) {
       write.csv(
@@ -713,6 +718,23 @@ function(input, output, session) {
     }
   )
 
+  download_all_data <- reactive({
+    filtered <- dashboard_data
+    return(filtered)
+  })
+
+  output$download_all_data <- downloadHandler(
+    filename = function() {
+      "all_invasive_species_data.csv"
+    },
+    content = function(file) {
+      write.csv(
+        download_all_data(),
+        file,
+        row.names = FALSE
+      )
+    }
+  )
   # References:
   # - [1] https://chat.openai.com/share/4d26e796-62b4-4c35-8787-e7e0d26b62e5
 }
