@@ -12,13 +12,27 @@ This is a repository to store the R Codebase used to produce the Final Project f
 ## Repository Content
 
 -   The [invasive_species_dashboard](https://github.com/johann-wagner/DS4B-final-project/tree/main/invasive_species_dashboard) folder contains the entire self-contained RShiny dashboard codebase and data.
+
 -   The [processed_data](https://github.com/johann-wagner/DS4B-final-project/tree/main/processed_data) folder includes:
-  - A [data_cleaning.Rmd](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/data_cleaning.Rmd) file, which showcases the data cleaning thought process and highlights some of the initial data issues with the raw data.
+  - The [data_cleaning.Rmd](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/data_cleaning.Rmd) file, which showcases the data cleaning thought process and highlights some of the initial data issues with the raw data.
   - There are also several .csv files, including:
     - [tidied_data.csv](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/tidied_data.csv) is the binded rows of the raw data.
     - [cleaned_data.csv](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/cleaned_data.csv) is the cleaned data, which removed the excluded data.
     - [dashboard_data.csv](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/dashboard_data.csv) is the cleaned data with a few extra columns.
     - [excluded_data.csv](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/excluded_data.csv) is the excluded data which were identified in [data_cleaning.Rmd](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/data_cleaning.Rmd).
+
+-  The [raw_data](https://github.com/johann-wagner/DS4B-final-project/tree/main/raw_data) folder includes the seven raw data files. The respective DOIs are listed below:
+  1.  [European Rabbits (Oryctolagus cuniculus)](https://doi.org/10.26197/ala.d0da2524-838a-4540-a160-fba8088f4850)
+  2.  [European Red Foxes (Vulpes vulpes)](https://doi.org/10.26197/ala.5f700174-e92e-4376-a243-be05ffa93f46)
+  3.  [Cane Toads (Rhinella marina)](https://doi.org/10.26197/ala.d6d70c2c-00de-4f76-8ea6-598b9562eb64)
+  4.  [Feral Cats (Felis catus)](https://doi.org/10.26197/ala.57a58cdc-88c0-45c1-9260-bd17c6fc4b62)
+  5.  [Feral Horses (Equus (Equus) caballus)](https://doi.org/10.26197/ala.c3cebb21-c2e0-41d0-8b5d-f446c2914827)
+  6.  [Feral Pigs (Sus scrofa)](https://doi.org/10.26197/ala.952aa727-1915-4c3f-8399-ed940c24bfef)
+  7.  [Red Imported Fire Ants (Solenopsis invicta)](https://doi.org/10.26197/ala.74b5dd29-4287-473d-8391-9184c8c62554)
+
+-  The [screenshots](https://github.com/johann-wagner/DS4B-final-project/tree/main/screenshots) folder contains .png files that are used in [final_project.Rmd](https://github.com/johann-wagner/DS4B-final-project/blob/main/final_project.Rmd)
+
+-  The [scripts](https://github.com/johann-wagner/DS4B-final-project/tree/main/scripts) folder contains .R files that load, clean, wrangle, manipulate, and visualise the raw data. The [custom-functions](https://github.com/johann-wagner/DS4B-final-project/tree/main/scripts/custom_functions) sub-folder contains a bunch of .R files that are functions used in the main .R files.
 
 ## The Brief
 Your task is to:
