@@ -38,11 +38,10 @@ fluidPage(
       12,
       wellPanel(
         h2(strong("Invasive Species Dashboard")),
-        p(
-          "This RShiny App Dashboard creates two visualisations (spatial and temporal) for seven invasive animal species in Australia.",
-          "You can select one of the seven animal species and one of the eight state/territory values to change the visualisation outputs."
-        ),
-        p("More information on the development of this App can be found on the GitHub Repository: https://github.com/johann-wagner/DS4B-final-project")
+        p("This RShiny App Dashboard creates two visualisations (spatial and temporal) for seven invasive animal species in Australia."),
+        p("You can select one of the seven animal species and one of the eight state/territory values to change the visualisation outputs."),
+        p("More information on the development of this App can be found on the GitHub Repository: https://github.com/johann-wagner/DS4B-final-project"),
+        p("For the time being, the repo is currently set to zero. Please contact me via my email: johann.wagner@gmail.com")
       )
     ),
   ),
@@ -121,7 +120,7 @@ fluidPage(
       p("6.  Feral Pigs (https://doi.org/10.26197/ala.952aa727-1915-4c3f-8399-ed940c24bfef)"),
       p("7.  Red Imported Fire Ants (https://doi.org/10.26197/ala.74b5dd29-4287-473d-8391-9184c8c62554)"),
       p("ABS Australian Statistical Geography Standard (ASGS) Edition 3 (https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026)")
-      ),
+    ),
 
     # Main Panel
     mainPanel(
