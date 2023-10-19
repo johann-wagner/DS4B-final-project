@@ -72,37 +72,36 @@ source(
 
 # Data Manipulation -------------------------------------------------------=
 
-dashboard_data <- cleaned_data %>% 
-  
-  create_state_column() %>% 
-  
+dashboard_data <- cleaned_data %>%
+  create_state_column() %>%
   mutate(
-    
+
     # Create colloquial/non-scientific name for each species
     simpleName = case_when(
       scientificName %in% c(
         "Oryctolagus cuniculus",
         "Oryctolagus cuniculus cuniculus"
-        )                                        ~ "European Rabbits",
+      ) ~ "European Rabbits",
       scientificName %in% c(
         "Vulpes vulpes",
-        "Vulpes vulpes vulpes")                  ~ "European Red Foxes",
-      scientificName == "Rhinella marina"        ~ "Cane Toads",
-      scientificName == "Felis catus"            ~ "Feral Cats",
+        "Vulpes vulpes vulpes"
+      ) ~ "European Red Foxes",
+      scientificName == "Rhinella marina" ~ "Cane Toads",
+      scientificName == "Felis catus" ~ "Feral Cats",
       scientificName == "Equus (Equus) caballus" ~ "Feral Horses",
       scientificName %in% c(
         "Sus scrofa",
         "Sus scrofa domesticus"
-        )                                        ~ "Feral Pigs",
-      scientificName == "Solenopsis invicta"     ~ "Red Imported Fire Ants"
-      ),
-    
+      ) ~ "Feral Pigs",
+      scientificName == "Solenopsis invicta" ~ "Red Imported Fire Ants"
+    ),
+
     # Create month column
-    month = eventDate %>% 
-      as_date() %>% 
-      month(label = TRUE) %>% 
+    month = eventDate %>%
+      as_date() %>%
+      month(label = TRUE) %>%
       as_factor()
-    )
+  )
 
 
 
@@ -110,7 +109,7 @@ dashboard_data <- cleaned_data %>%
 
 # Save Dashboard Data -----------------------------------------------------------
 
-dashboard_data %>% 
+dashboard_data %>%
   write_csv(
     here(
       "processed_data",
@@ -118,7 +117,7 @@ dashboard_data %>%
     )
   )
 
-dashboard_data %>% 
+dashboard_data %>%
   write_csv(
     here(
       "invasive_species_dashboard",
