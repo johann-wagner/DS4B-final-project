@@ -17,19 +17,17 @@
 # of Living Australia database.
 
 load_galah_occurrence_data <- function(
-  # character string of scientific name of species
-  species_name
-) {
+    # character string of scientific name of species
+    species_name) {
   species_occurrence <- galah_call() %>%
-    
     # To conduct a search for species scientific name
     galah_identify(species_name) %>% # Ref [1]
-    
+
     # Pre-applied filter to ensure quality-assured data
     # the "ALA" profile is designed to exclude lower quality records Ref [2]
-    galah_apply_profile(ALA) %>% 
+    galah_apply_profile(ALA) %>%
     atlas_occurrences(mint_doi = TRUE)
-  
+
   return(species_occurrence)
 }
 
