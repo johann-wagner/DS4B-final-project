@@ -20,8 +20,9 @@ editor_options:
 
 # Word/figure count
 
-Words: [The number of words in your document, calculated using the word_count() function at the end of this document]
-Figures: [The number of figures in your document. You can just count these]
+Words: 4127 words
+
+Figures: 8
 
 # Locations on GitHub
 
