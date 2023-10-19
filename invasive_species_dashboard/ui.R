@@ -41,7 +41,7 @@ fluidPage(
         p("This RShiny App Dashboard creates two visualisations (spatial and temporal) for seven invasive animal species in Australia."),
         p("You can select one of the seven animal species and one of the eight state/territory values to change the visualisation outputs."),
         p("More information on the development of this App can be found on the GitHub Repository: https://github.com/johann-wagner/DS4B-final-project"),
-        p("For the time being, the repo is currently set to zero. Please contact me via my email: johann.wagner@gmail.com")
+        p("For the time being, the repo is currently set to private. Please contact me via my email: johann.wagner@gmail.com")
       )
     ),
   ),
