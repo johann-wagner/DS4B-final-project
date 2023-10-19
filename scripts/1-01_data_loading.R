@@ -61,15 +61,15 @@ raw_red_fire_ants <- load_galah_occurrence_data(
 
 # Save Raw Data -----------------------------------------------------------
 
-raw_rabbits %>% 
+raw_rabbits %>%
   write_csv(
     here(
       "raw_data",
       "raw_rabbits_data.csv"
-      )
+    )
   )
 
-raw_foxes %>% 
+raw_foxes %>%
   write_csv(
     here(
       "raw_data",
@@ -77,7 +77,7 @@ raw_foxes %>%
     )
   )
 
-raw_cane_toads %>% 
+raw_cane_toads %>%
   write_csv(
     here(
       "raw_data",
@@ -85,7 +85,7 @@ raw_cane_toads %>%
     )
   )
 
-raw_cats %>% 
+raw_cats %>%
   write_csv(
     here(
       "raw_data",
@@ -93,7 +93,7 @@ raw_cats %>%
     )
   )
 
-raw_horses %>% 
+raw_horses %>%
   write_csv(
     here(
       "raw_data",
@@ -101,7 +101,7 @@ raw_horses %>%
     )
   )
 
-raw_pigs %>% 
+raw_pigs %>%
   write_csv(
     here(
       "raw_data",
@@ -109,7 +109,7 @@ raw_pigs %>%
     )
   )
 
-raw_red_fire_ants %>% 
+raw_red_fire_ants %>%
   write_csv(
     here(
       "raw_data",
@@ -123,7 +123,7 @@ raw_red_fire_ants %>%
 
 # Tidy Data ---------------------------------------------------------------
 
-tidied_data <- raw_rabbits %>% 
+tidied_data <- raw_rabbits %>%
   bind_rows(
     raw_foxes,
     raw_cane_toads,
@@ -139,7 +139,7 @@ tidied_data <- raw_rabbits %>%
 
 # Save Tidied Data -----------------------------------------------------------
 
-tidied_data %>% 
+tidied_data %>%
   write_csv(
     here(
       "processed_data",
