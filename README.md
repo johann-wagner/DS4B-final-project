@@ -4,14 +4,21 @@
 This is a repository to store the R Codebase used to produce the Final Project for DS4B 2023. The details of the Assignment instructions are further down this README.md file.
 
 ## Project Management using GitHub
--   GitHub Issues were used to manage and implement new features and documentation.
+-   [GitHub Issues](https://github.com/johann-wagner/DS4B-final-project/issues) were used to manage and implement new features and documentation.
 -   GitHub Branching was used for most major Issues (see [Branch History](https://github.com/johann-wagner/DS4B-final-project/blob/main/README.md#branch-history) below).
 -   GitHub Releases were used to distinguish major developments of the RShiny App.
--   GitHub Projects and Milestones were used to manage work timelines [Data Science for Biologists (DS4B)](https://github.com/users/johann-wagner/projects/2)
+-   GitHub Projects and Milestones were used to manage work timelines [Data Science for Biologists (DS4B)](https://github.com/users/johann-wagner/projects/2).
 
 ## Repository Content
 
-...
+-   [invasive_species_dashboard](https://github.com/johann-wagner/DS4B-final-project/tree/main/invasive_species_dashboard) contains the entire self-contained RShiny dashboard codebase and data.
+-   [processed_data](https://github.com/johann-wagner/DS4B-final-project/tree/main/processed_data) includes:
+-     A [data_cleaning.Rmd](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/data_cleaning.Rmd) file, which showcases the data cleaning thought process and highlights some of the initial data issues with the raw data
+-     There are also several .csv files, including:
+-       [tidied_data.csv](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/tidied_data.csv) is the binded rows of the raw data.
+-       [cleaned_data.csv](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/cleaned_data.csv) is the cleaned data, which removed the excluded data.
+-       [dashboard_data.csv](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/dashboard_data.csv) is the cleaned data with a few extra columns.
+-       [excluded_data.csv](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/excluded_data.csv) is the excluded data which were identified in [data_cleaning.Rmd](https://github.com/johann-wagner/DS4B-final-project/blob/main/processed_data/data_cleaning.Rmd).
 
 ## The Brief
 Your task is to:
