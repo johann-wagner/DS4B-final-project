@@ -1,7 +1,7 @@
 ---
 title: "Invasive Animal Species Dashboard"
 author: "Johann Wagner - u6958957"
-date: "2023-10-17"
+date: "2023-10-20"
 output:  
     html_document:
         toc: true
@@ -19,7 +19,7 @@ editor_options:
 
 # Word/figure count
 
-Words: 1998 words
+Words: 1999 words
 
 Figures: 3
 
@@ -27,9 +27,13 @@ Figures: 3
 
 The root directory on GitHub: [DS4B-final-project](https://github.com/johann-wagner/DS4B-final-project/tree/main).
 
+# Dashboard Link
+
+[Dashboard Link](https://0uexv8-johann-wagner.shinyapps.io/invasive_species_dashboard/)
+
 # Data Description
 
-The data used in this project is from The Atlas of Living Australia (ALA), which is "a collaborative, digital and open infrastructure repository that aggregates biodiversity data from multiple sources" ([ALA, 2022](https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala)).
+The data used is from The Atlas of Living Australia (ALA), which is "a collaborative, digital and open infrastructure repository that aggregates biodiversity data from multiple sources" ([ALA, 2022](https://support.ala.org.au/support/solutions/articles/6000261410-introduction-to-the-ala)).
 
 Specifically, this analysis uses species occurrence records for seven invasive animal species:
 
@@ -61,7 +65,7 @@ I was interested in the spatial and temporal variables for all 7 species, partic
 
 ## Justifications:
 
-Initially, I was interested in the spatial distribution of magpies in Canberra as I am an avid cyclist and wanted to find the hotspots of magpie records and linking/statistically model this data with a collaborative magpie swooping database called [magpiealert.com](https://www.magpiealert.com/). Unfortunately, the data was not available and the sampling bias of the occurrence data may not be truly representative, as observations are more likely to be near roads, airports, and major urban areas ([Kellie, 2022](https://labs.ala.org.au/posts/2022-07-22_sample-bias/post.html?panelset=mantids)).
+Initially, I was interested in the spatial distribution of magpies in Canberra as I'm an avid cyclist and wanted to find the hotspots of magpie records and linking/statistically model this data with a collaborative magpie swooping database called [magpiealert.com](https://www.magpiealert.com/). Unfortunately, the data was not available and the sampling bias of the occurrence data may not be truly representative, as observations are more likely to be near roads, airports, and major urban areas ([Kellie, 2022](https://labs.ala.org.au/posts/2022-07-22_sample-bias/post.html?panelset=mantids)).
 
 This made me interested in simply visualising the data spatially, instead of using any statistical methodologies and focusing the project on whether there would be major differences/patterns of occurrence records in urban vs. non-urban/regional areas. Unfortunately, given the scope of the project, calculating the urban vs. non-urban analysis would have been too much scope-creep, so this aim was ignored (maybe post-project exploration).
 
