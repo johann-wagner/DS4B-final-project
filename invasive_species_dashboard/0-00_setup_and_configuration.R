@@ -80,7 +80,7 @@ library(sf)
 # the data through a package would be more standardised/reproducible than
 # downloading it straight from the ABS.
 options(timeout = 1000)
-# devtools::install_github("wfmackey/absmapsdata")
+devtools::install_github("wfmackey/absmapsdata")
 # To easily access the Australian Bureau of Statistics (ABS) spatial structures
 ### https://github.com/wfmackey/absmapsdata
 library(absmapsdata)
@@ -120,6 +120,119 @@ library(thematic)
 
 
 ### Misc ---------------------------------------------------------------------
+# To easily standardise naming conventions based upon a consistent design
+# philosophy
+### https://github.com/Tazinho/snakecase
+library(snakecase)
+
+# To locate and download species observations from the Atlas of Living
+# Australia
+### https://galah.ala.org.au/
+library(galah)
+
 # To easily enable file referencing in project-oriented workflows
 ### https://here.r-lib.org/
 library(here)
+
+
+
+
+
+# Custom Functions --------------------------------------------------------
+
+
+## load_galah_occurrence_data --------------------------------------------
+### Purpose:
+# To load the species occurrence data of any given species within the Atlas
+# of Living Australia database.
+source(
+  here::here(
+    "scripts",
+    "custom_functions",
+    "load_galah_occurrence_data.R"
+  ),
+  echo = TRUE,
+  max.deparse.length = 1e4
+)
+
+
+
+## create_state_column -----------------------------------------------------
+### Purpose:
+# To create a state column indicating which state each occurrence observation
+# was recorded in based on the spatial longitude and latitude data.
+source(
+  here::here(
+    "scripts",
+    "custom_functions",
+    "create_state_column.R"
+  ),
+  echo = TRUE,
+  max.deparse.length = 1e4
+)
+
+
+
+## add_na_date_to_excluded_data --------------------------------------------
+### Purpose:
+# To add NA values from the eventDate column into the excluded data dataset.
+# Note: This does not remove/filter any data from the input data, this only
+#       adds data to the excluded_data dataset.
+source(
+  here::here(
+    "scripts",
+    "custom_functions",
+    "add_na_date_to_excluded_data.R"
+  ),
+  echo = TRUE,
+  max.deparse.length = 1e4
+)
+
+
+
+## add_na_spatial_to_excluded_data -----------------------------------------
+### Purpose:
+# To add NA values from the decimalLatitude and decimalLongitude columns into
+# the excluded data dataset.
+# Note: This does not remove/filter any data from the input data, this only
+#       adds data to the excluded_data dataset.
+source(
+  here::here(
+    "scripts",
+    "custom_functions",
+    "add_na_spatial_to_excluded_data.R"
+  ),
+  echo = TRUE,
+  max.deparse.length = 1e4
+)
+
+
+
+## add_not_within_abs_map_to_excluded_data ---------------------------------
+### Purpose:
+# To add NA values from the derived state column into the excluded data dataset.
+# Note: This does not remove/filter any data from the input data, this only
+#       adds data to the excluded_data dataset.
+source(
+  here::here(
+    "scripts",
+    "custom_functions",
+    "add_not_within_abs_map_to_excluded_data.R"
+  ),
+  echo = TRUE,
+  max.deparse.length = 1e4
+)
+
+
+
+
+
+
+# Provide Valid Email -----------------------------------------------------
+
+# Ref [1]
+# Use an Atlas of Australia-registered email (Register at ala.org.au)
+galah_config(email = "johann.wagner@gmail.com")
+
+# References:
+# - [1] https://labs.ala.org.au/posts/2023-05-16_dingoes/post.html
