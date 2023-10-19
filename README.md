@@ -49,4 +49,11 @@ Ideally, you should choose a combination of dataset and questions/aims that are 
 ## Branch History
 Version control using Git was trialed for this assignment, as I wanted to learn more about the uses of Pull Requests and Merging Branches. I used SourceTree to visualise all of my commits/pushes/branch merges.
 
-...
+<img width="1055" alt="image" src="https://github.com/johann-wagner/DS4B-final-project/assets/103425902/0014bead-a402-4076-a1e9-bcfbd0853e15">
+
+<img width="1055" alt="image" src="https://github.com/johann-wagner/DS4B-final-project/assets/103425902/0fe334b6-5cae-4fe8-879b-c15ed2c23dd5">
+
+<img width="1052" alt="image" src="https://github.com/johann-wagner/DS4B-final-project/assets/103425902/ed3600e3-e3de-4ac2-8415-1066a2343995">
+
+<img width="1055" alt="image" src="https://github.com/johann-wagner/DS4B-final-project/assets/103425902/c7874577-d2f4-4535-8926-e53452a224fc">
+
